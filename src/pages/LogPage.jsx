@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { useReading } from '../context/ReadingContext';
+import { useStories } from '../context/StoryContext';
 import StoryList from '../components/StoryList';
-import stories from '../data/stories';
 
 export default function LogPage() {
   const { readLog, favorites } = useReading();
+  const { stories, isLoading, error } = useStories();
   const [activeTab, setActiveTab] = useState('history'); // 'history' or 'favorites'
 
   const readStories = stories.filter(s => readLog.includes(s.id));
   const favoriteStories = stories.filter(s => favorites.includes(s.id));
+
+  if (isLoading) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ Napló betöltése...</div>;
+  if (error) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⚠️ {error}</div>;
 
   return (
     <div className="page-content fade-in">

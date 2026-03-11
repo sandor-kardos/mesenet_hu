@@ -430,6 +430,29 @@ img {
   border-color: var(--chip-active-bg);
 }
 
+.tags-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.tags-scroll-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 4px;
+  flex: 1;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.tags-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
 .age-filter-row {
   margin-bottom: 12px;
 }

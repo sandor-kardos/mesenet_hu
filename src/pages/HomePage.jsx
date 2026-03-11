@@ -1,14 +1,35 @@
 import { useState } from 'react';
+import { useStories } from '../context/StoryContext';
 import Header from '../components/Header';
 import ContinueCard from '../components/ContinueCard';
 import MoralWeightFilter from '../components/MoralWeightFilter';
 import StoryCarousel from '../components/StoryCarousel';
 import StoryList from '../components/StoryList';
 import MerchBanner from '../components/MerchBanner';
-import stories from '../data/stories';
 
 export default function HomePage() {
+    const { stories, isLoading, error } = useStories();
     const [filteredStories, setFilteredStories] = useState(null);
+
+    // Provide immediate loading and error states to wait for API data
+    if (isLoading) {
+        return (
+            <div className="fade-in" style={{ padding: '80px 20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '3rem', animation: 'spin 2s linear infinite' }}>⏳</div>
+                <h2 style={{ marginTop: '20px' }}>Mesék betöltése...</h2>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="fade-in" style={{ padding: '80px 20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '3rem' }}>⚠️</div>
+                <h2 style={{ marginTop: '20px' }}>A manóba, valami elromlott!</h2>
+                <p>{error}</p>
+            </div>
+        );
+    }
 
     // "Nektek ajánljuk" — shuffle for demo
     const recommended = [...stories].sort(() => Math.random() - 0.5);

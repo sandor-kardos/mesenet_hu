@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import StoryList from '../components/StoryList';
-import stories from '../data/stories';
+import { useStories } from '../context/StoryContext';
 
 export default function DiscoverPage() {
+  const { stories, isLoading, error } = useStories();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('all');
 
@@ -15,7 +16,10 @@ export default function DiscoverPage() {
       const matchesTag = selectedTag === 'all' || (story.tags && story.tags.includes(selectedTag));
       return matchesSearch && matchesTag;
     });
-  }, [searchQuery, selectedTag]);
+  }, [searchQuery, selectedTag, stories]);
+
+  if (isLoading) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ Keresés betöltése...</div>;
+  if (error) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⚠️ {error}</div>;
 
   return (
     <div className="page-content fade-in">

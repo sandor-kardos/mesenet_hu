@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import stories from '../data/stories';
+import { useStories } from '../context/StoryContext';
 
 const MORAL_WEIGHTS = [
     { value: 1, emoji: '😴', label: 'Könnyed' },
@@ -10,13 +10,14 @@ const MORAL_WEIGHTS = [
 
 const AGE_GROUPS = ['0-3', '4-6', '7+'];
 
-const ALL_TAGS = [...new Set(stories.flatMap((s) => s.tags))];
-
 export default function MoralWeightFilter({ onFilterChange }) {
+    const { stories } = useStories();
     const [activeWeight, setActiveWeight] = useState(null);
     const [activeAges, setActiveAges] = useState([]);
     const [activeTags, setActiveTags] = useState([]);
     const navigate = useNavigate();
+
+    const ALL_TAGS = [...new Set(stories.flatMap((s) => s.tags || []))];
 
     const toggleAge = (age) => {
         setActiveAges((prev) =>
@@ -85,17 +86,19 @@ export default function MoralWeightFilter({ onFilterChange }) {
                 </div>
             </div>
 
-            <div className="filter-row">
+            <div className="tags-filter-row">
                 <span className="filter-label">Címkék:</span>
-                {ALL_TAGS.map((tag) => (
-                    <button
-                        key={tag}
-                        className={`chip ${activeTags.includes(tag) ? 'active' : ''}`}
-                        onClick={() => toggleTag(tag)}
-                    >
-                        {tag}
-                    </button>
-                ))}
+                <div className="tags-scroll-container">
+                    {ALL_TAGS.map((tag) => (
+                        <button
+                            key={tag}
+                            className={`chip ${activeTags.includes(tag) ? 'active' : ''}`}
+                            onClick={() => toggleTag(tag)}
+                        >
+                            {tag}
+                        </button>
+                    ))}
+                </div>
             </div>
         </div>
     );

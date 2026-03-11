@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ReadingProvider } from './context/ReadingContext';
+import { StoryProvider } from './context/StoryContext';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
 import HomePage from './pages/HomePage';
@@ -41,11 +42,13 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <ReadingProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </ReadingProvider>
+      <StoryProvider>
+        <ReadingProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </ReadingProvider>
+      </StoryProvider>
     </ThemeProvider>
   );
 }

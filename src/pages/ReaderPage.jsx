@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
-import stories from '../data/stories';
+import { useStories } from '../context/StoryContext';
 
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
 
@@ -11,6 +11,7 @@ export default function ReaderPage() {
     const navigate = useNavigate();
     const { cycleTheme, themeIcon } = useTheme();
     const { updateProgress, markAsRead, rateStory, ratings, lastRead } = useReading();
+    const { stories, isLoading, error } = useStories();
 
     const story = stories.find((s) => s.id === parseInt(id));
     const contentRef = useRef(null);
@@ -114,6 +115,14 @@ export default function ReaderPage() {
         }
     };
 
+    if (isLoading) {
+        return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ Betöltés...</div>;
+    }
+
+    if (error) {
+        return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⚠️ Hiba: {error}</div>;
+    }
+
     if (!story) {
         return (
             <div className="reader-shell">
@@ -128,7 +137,10 @@ export default function ReaderPage() {
         );
     }
 
-    const paragraphs = story.content.split('\n\n');
+    // Replace <br/> or inner HTML safely or split simple newlines. 
+    // WordPress usually sends <p> tags, so using dangeroulySetInnerHTML is safer, but for now we fallback softly:
+    const contentHtml = story.content.includes('<p>') ? story.content : story.content.split('\n\n').map(p => `<p>${p}</p>`).join('');
+    
     const nextStory = getNextStory();
 
     return (
@@ -152,21 +164,10 @@ export default function ReaderPage() {
                         <div className="story-image-mock">
                             {story.heroImage}
                         </div>
-                        <div className="story-image-actions">
-                            <button 
-                                className="image-action-btn"
-                                onClick={handleShare}
-                                aria-label="Megosztás"
-                            >
-                                📤 Megosztás
-                            </button>
-                        </div>
                     </div>
                 )}
 
-                {paragraphs.map((p, i) => (
-                    <p key={i}>{p}</p>
-                ))}
+                <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
                 {/* End Block */}
                 <div className="end-block">
@@ -191,6 +192,17 @@ export default function ReaderPage() {
                                 👎
                             </button>
                         </div>
+                    </div>
+
+                    {/* Share Action */}
+                    <div className="share-section" style={{ marginBottom: '20px' }}>
+                        <button 
+                            className="next-story-btn"
+                            onClick={handleShare}
+                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}
+                        >
+                            📤 Megosztás
+                        </button>
                     </div>
 
                     {/* Discussion */}

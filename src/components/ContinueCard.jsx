@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { useReading } from '../context/ReadingContext';
-import stories from '../data/stories';
+import { useStories } from '../context/StoryContext';
 
 export default function ContinueCard() {
     const { lastRead } = useReading();
+    const { stories } = useStories();
     const navigate = useNavigate();
 
     if (!lastRead || lastRead.scrollPercent >= 98) return null;
