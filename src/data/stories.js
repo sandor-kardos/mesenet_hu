@@ -15,7 +15,8 @@ const stories = [
       'Mit látott meg Kis Maci az ablakon keresztül?',
       'Mit mondott a Mama, ki vigyáz Macira éjszaka?',
       'Szoktál te is félni egy kicsit sötétben? Mi segít ilyenkor?'
-    ]
+    ],
+    heroImage: '🐻'
   },
   {
     id: 6,
@@ -31,7 +32,8 @@ const stories = [
       'Mi csalogatta ki a kismadarat a fészekből?',
       'Mit kezdett el csinálni a kismadár, amikor kirepült?',
       'Szerinted is jó érzés kipróbálni valami új dolgot?'
-    ]
+    ],
+    heroImage: '🐦'
   },
   {
     id: 7,
@@ -47,7 +49,8 @@ const stories = [
       'Milyen színű volt a pipacs?',
       'Milyen színű volt a nefelejcs?',
       'Neked mi a legkedvesebb színed a világon?'
-    ]
+    ],
+    heroImage: '🐞'
   },
   {
     id: 8,
@@ -63,7 +66,8 @@ const stories = [
       'Kivel találkozott a Nyuszi?',
       'Mit adott a mókus a Nyuszinak?',
       'Te is meg szoktad osztani a játékaidat a barátaiddal?'
-    ]
+    ],
+    heroImage: '🐰'
   },
   {
     id: 9,
@@ -79,7 +83,8 @@ const stories = [
       'Ki a leglassabb állat az erdőben?',
       'Mit visz magával a kis csiga a hátán?',
       'Szerinted miért jó, hogy a csigának mindig ott van a házikója?'
-    ]
+    ],
+    heroImage: '🐌'
   },
   
   // 4-6 Age Group
@@ -97,7 +102,8 @@ const stories = [
       'Kinek segített Kis Kondás az erdőben?',
       'Hányszor kellett megfújnia a kürtjét, hogy segítséget hívjon?',
       'Szerinted megéri segíteni másoknak, még ha egy kicsit félünk is?'
-    ]
+    ],
+    heroImage: '👦'
   },
   {
     id: 4,
@@ -113,7 +119,8 @@ const stories = [
       'Miért rohant a Nyúl a Bölcs Rókához?',
       'Minek az odúját ajánlotta a róka a nyuszinak?',
       'Miért fontos megállni és gondolkodni, amikor valami váratlan dolog történik?'
-    ]
+    ],
+    heroImage: '🦊'
   },
   {
     id: 5,
@@ -129,7 +136,8 @@ const stories = [
       'Hány arany tányérja volt a királynak?',
       'Milyen állatokat és embereket altatott el a varázslat száz évre?',
       'Mit gondolsz, hogyan érezte magát az a tündér akit nem hívtak meg?'
-    ]
+    ],
+    heroImage: '👑'
   },
   {
     id: 10,
@@ -145,7 +153,8 @@ const stories = [
       'Miért volt valójában morcos a sárkány?',
       'Hova nem hívták meg soha játszani?',
       'Hogyan tudnál felvidítani egy barátodat, ha szomorú lenne?'
-    ]
+    ],
+    heroImage: '🐉'
   },
   {
     id: 11,
@@ -161,7 +170,8 @@ const stories = [
       'Mit csinált a tücsök egész nyáron?',
       'Miért dolgozott a hangya olyan keményen melegben is?',
       'Szerinted megéri előre gondolkodni és felkészülni a dolgokra?'
-    ]
+    ],
+    heroImage: '🐜'
   },
 
   // 7+ Age Group
@@ -179,7 +189,8 @@ const stories = [
       'Kivel találkozott a favágó az öreg tölgyfa alatt?',
       'Mi volt a favágó első buta kívánsága, ami elrontott mindent?',
       'Ha lenne három kívánságod most, mikor lenne a legokosabb használni őket?'
-    ]
+    ],
+    heroImage: '🌟'
   },
   {
     id: 12,
@@ -195,7 +206,8 @@ const stories = [
       'Hol élt a csillagász?',
       'Mit épített hosszú heteken keresztül?',
       'Szerinted léteznek olyan dolgok, amiket nem látunk a szemünkkel, de mégis tudjuk, hogy ott vannak?'
-    ]
+    ],
+    heroImage: '🔭'
   },
   {
     id: 13,
@@ -211,7 +223,8 @@ const stories = [
       'Hol találták meg a gyerekek a régi térképet?',
       'Szerinted mit kellett magukkal vinniük a hosszú útra?',
       'Szerinted okos ötlet egyedül elindulni egy nagy kalandra, vagy jobb, ha ketten vannak?'
-    ]
+    ],
+    heroImage: '🗺️'
   },
   {
     id: 14,
@@ -227,7 +240,8 @@ const stories = [
       'Milyen különleges képessége volt a zsebórának?',
       'Mi volt az ára annak, ha a fiú visszatekerte az időt?',
       'Ha hibázol, jobb elfogadni és tanulni belőle, vagy mindent megváltoztatni utólag?'
-    ]
+    ],
+    heroImage: '🕰️'
   },
   {
     id: 15,
@@ -243,7 +257,8 @@ const stories = [
       'Mire ébredtek fel a kis sziget lakói?',
       'Miért nevetett ilyen jót az öreg vulkán?',
       'Szerinted is igaz az, hogy nehezen lehetsz mérges, ha közben nagyon nevetsz?'
-    ]
+    ],
+    heroImage: '🌋'
   }
 ];
 

@@ -97,6 +97,23 @@ export default function ReaderPage() {
         return stories[nextIndex];
     };
 
+    const handleShare = async (e) => {
+        e.stopPropagation();
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Nézd meg ezt a képet a(z) ${story.title} meséhez!`,
+                    text: 'A Mesenet appban olvasom ezt a szuper mesét!',
+                    url: window.location.href,
+                });
+            } catch (err) {
+                console.log('Share failed', err);
+            }
+        } else {
+            alert('A megosztás nem támogatott ezen az eszközön.');
+        }
+    };
+
     if (!story) {
         return (
             <div className="reader-shell">
@@ -129,6 +146,24 @@ export default function ReaderPage() {
 
             {/* Content */}
             <div className="reader-content" ref={contentRef}>
+                {/* Static Story Hero Image */}
+                {story.heroImage && (
+                    <div className="story-image-container fade-in">
+                        <div className="story-image-mock">
+                            {story.heroImage}
+                        </div>
+                        <div className="story-image-actions">
+                            <button 
+                                className="image-action-btn"
+                                onClick={handleShare}
+                                aria-label="Megosztás"
+                            >
+                                📤 Megosztás
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {paragraphs.map((p, i) => (
                     <p key={i}>{p}</p>
                 ))}
