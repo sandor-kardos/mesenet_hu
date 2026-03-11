@@ -16,7 +16,13 @@ export default function StoryCarousel({ title, stories, isSmall = false }) {
                         onClick={() => navigate(`/read/${story.id}`)}
                         id={`story-card-${story.id}`}
                     >
-                        <div className={`story-card-cover ${isSmall ? 'small-cover' : ''}`}>{story.coverEmoji}</div>
+                        <div className={`story-card-cover ${isSmall ? 'small-cover' : ''}`} style={story.featuredImage ? { background: 'transparent' } : {}}>
+                            {story.featuredImage ? (
+                                <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                story.coverEmoji
+                            )}
+                        </div>
                         <div className={`story-card-body ${isSmall ? 'small-body' : ''}`}>
                             <div className="story-card-title">{story.title}</div>
                             {isSmall ? null : (

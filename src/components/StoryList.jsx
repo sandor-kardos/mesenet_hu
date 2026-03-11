@@ -16,7 +16,13 @@ export default function StoryList({ title, stories, hideSeeAll = false }) {
                         onClick={() => navigate(`/read/${story.id}`)}
                         id={`story-list-${story.id}`}
                     >
-                        <div className="story-list-cover">{story.coverEmoji}</div>
+                        <div className="story-list-cover" style={story.featuredImage ? { padding: 0 } : {}}>
+                            {story.featuredImage ? (
+                                <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                            ) : (
+                                story.coverEmoji
+                            )}
+                        </div>
                         <div className="story-list-info">
                             <div className="story-list-title">{story.title}</div>
                             <div className="story-list-meta">

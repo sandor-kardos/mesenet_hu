@@ -159,10 +159,14 @@ export default function ReaderPage() {
             {/* Content */}
             <div className="reader-content" ref={contentRef}>
                 {/* Static Story Hero Image */}
-                {story.heroImage && (
+                {(story.heroImage || story.featuredImage) && (
                     <div className="story-image-container fade-in">
-                        <div className="story-image-mock">
-                            {story.heroImage}
+                        <div className="story-image-mock" style={story.featuredImage ? { padding: 0, overflow: 'hidden', background: 'transparent', border: 'none' } : {}}>
+                            {story.featuredImage ? (
+                                <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                story.heroImage
+                            )}
                         </div>
                     </div>
                 )}

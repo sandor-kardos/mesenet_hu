@@ -21,7 +21,13 @@ export default function ContinueCard() {
             id="continue-card"
         >
             <div className="continue-card-inner">
-                <div className="continue-emoji">{story.coverEmoji}</div>
+                <div className="continue-emoji" style={story.featuredImage ? { padding: 0, overflow: 'hidden', background: 'transparent' } : {}}>
+                    {story.featuredImage ? (
+                        <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                    ) : (
+                        story.coverEmoji
+                    )}
+                </div>
                 <div className="continue-info">
                     <div className="continue-label">📖 Folytatás</div>
                     <div className="continue-title">{story.title}</div>

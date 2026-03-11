@@ -36,12 +36,18 @@ export function StoryProvider({ children }) {
                         if (m.includes('komoly')) moralWeight = 3;
                     }
 
+                    // Extract featured image completely
+                    const featuredMedia = post._embedded?.['wp:featuredmedia'];
+                    const featuredImage = featuredMedia && featuredMedia.length > 0 ? featuredMedia[0].source_url : null;
+
                     return {
                         id: post.id,
                         title: post.title?.rendered || 'Névtelen mese',
                         slug: post.slug,
                         content: post.content?.rendered || '', 
                         heroImage: acf.hero_image || '📖',
+                        coverEmoji: acf.hero_image || '📖',
+                        featuredImage: featuredImage,
                         readingTime: parseInt(acf.reading_time) || 5,
                         ageGroup: ageGroups.length > 0 ? ageGroups[0] : '4-6',
                         moralWeight: moralWeight,
