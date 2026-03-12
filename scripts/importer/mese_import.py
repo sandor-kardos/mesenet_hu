@@ -21,10 +21,6 @@ WP_APP_PASSWORD = os.getenv("WP_APP_PASSWORD")
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
-if GEMINI_API_KEY:
-    import google.generativeai as genai
-    genai.configure(api_key=GEMINI_API_KEY)
-
 client_claude = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY) if ANTHROPIC_API_KEY else None
 
 def slugify(t):
@@ -91,9 +87,9 @@ Schema:
 def generate_hero_image(prompt):
     print("[*] Generating Visual Asset (Explicit 3:4 Ratio)...")
     try:
-        from google import genai as g_genai
-        c = g_genai.Client(api_key=GEMINI_API_KEY)
-        res = c.models.generate_images(model=GEMINI_IMAGE_MODEL, prompt=prompt, number_of_images=1, aspect_ratio="3:4")
+        from google import genai as google_genai
+        client = google_genai.Client(api_key=GEMINI_API_KEY)
+        res = client.models.generate_images(model=GEMINI_IMAGE_MODEL, prompt=prompt, number_of_images=1, aspect_ratio="3:4")
         return res.generated_images[0]
     except Exception as e:
         print(f"[!] Image Error: {e}"); return None

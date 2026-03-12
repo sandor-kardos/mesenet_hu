@@ -1,0 +1,10 @@
+# add my ko fi link tothe just very briefly https://ko-fi.com/sandorko
+
+# generálj Ászf és Adatvédelem szöveget felugró ablakba
+
+# lehetne egy alkalmi képgenerálás a meséhez  mondjuk 1 hey lehetne ingyen azon felül pedig fizetős lenne? lehet túl kockázatos? több vele a gond lehet. 
+# lehetne 3 kép minden meséhez amik mindig véletlenszerűen jelenn;nek meg és mindig az aktuálisat lehetne lájkolni illetve tovább küldeni a történettel ha valaki akarja. kis ikonok kellenek mert mobil first webapp 
+
+kritizald es innovalj, alkalmazd ami mehet.
+
+function mese { python C:\AI\Antigravity\mesenet_hu\scripts\importer\mese_import.py $args[0] }

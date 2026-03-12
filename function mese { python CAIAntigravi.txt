@@ -1,0 +1,1 @@
+function mese { python C:\AI\Antigravity\mesenet_hu\scripts\importer\mese_import.py $args[0] }
