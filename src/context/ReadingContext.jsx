@@ -27,6 +27,13 @@ export function ReadingProvider({ children }) {
         return saved ? JSON.parse(saved) : {};
     });
 
+    // User Drawings: array of { id, storyId, dataUrl, timestamp }
+    const [userDrawings, setUserDrawings] = useState(() => {
+        const saved = localStorage.getItem('mesenet-drawings');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+
     useEffect(() => {
         if (lastRead) localStorage.setItem('mesenet-last-read', JSON.stringify(lastRead));
     }, [lastRead]);
@@ -42,6 +49,11 @@ export function ReadingProvider({ children }) {
     useEffect(() => {
         localStorage.setItem('mesenet-ratings', JSON.stringify(ratings));
     }, [ratings]);
+
+    useEffect(() => {
+        localStorage.setItem('mesenet-drawings', JSON.stringify(userDrawings));
+    }, [userDrawings]);
+
 
     const updateProgress = useCallback((storyId, scrollPercent) => {
         setLastRead({ storyId, scrollPercent, timestamp: Date.now() });
@@ -70,17 +82,38 @@ export function ReadingProvider({ children }) {
         localStorage.removeItem('mesenet-last-read');
     }, []);
 
+    const saveDrawing = useCallback((storyId, dataUrl) => {
+        setUserDrawings((prev) => {
+            const newDrawing = {
+                id: Date.now().toString(),
+                storyId,
+                dataUrl,
+                timestamp: Date.now()
+            };
+            return [newDrawing, ...prev];
+        });
+    }, []);
+
+    const deleteDrawing = useCallback((drawingId) => {
+        setUserDrawings((prev) => prev.filter(d => d.id !== drawingId));
+    }, []);
+
+
     return (
         <ReadingContext.Provider value={{
             lastRead,
             readLog,
             favorites,
             ratings,
+            userDrawings,
             updateProgress,
             markAsRead,
             toggleFavorite,
             rateStory,
+            saveDrawing,
+            deleteDrawing,
             clearProgress,
+
         }}>
             {children}
         </ReadingContext.Provider>

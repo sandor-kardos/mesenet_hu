@@ -9,7 +9,8 @@ export default function LogPage() {
   const [activeTab, setActiveTab] = useState('history'); // 'history' or 'favorites'
 
   const readStories = stories.filter(s => readLog.includes(s.id));
-  const favoriteStories = stories.filter(s => favorites.includes(s.id));
+  const favoriteStories = stories.filter(s => favorites.includes(String(s.id)) || favorites.includes(Number(s.id)));
+
 
   if (isLoading) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ Napló betöltése...</div>;
   if (error) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⚠️ {error}</div>;
@@ -45,9 +46,10 @@ export default function LogPage() {
           ) : (
             <div className="empty-state">
               <span className="empty-emoji">📚</span>
-              <p>Még nem olvastál el egy mesét sem végig.</p>
+              <p className="theme-aware-muted">Még nem olvastál el egy mesét sem végig.</p>
             </div>
           )
+
         )}
 
         {activeTab === 'favorites' && (
@@ -56,9 +58,10 @@ export default function LogPage() {
           ) : (
             <div className="empty-state">
               <span className="empty-emoji">🤍</span>
-              <p>Még nincsenek kedvenc meséid. Nyomj a szív ikonra az olvasóban!</p>
+              <p className="theme-aware-muted">Még nincsenek kedvenc meséid. Nyomj a szív ikonra az olvasóban!</p>
             </div>
           )
+
         )}
       </div>
     </div>

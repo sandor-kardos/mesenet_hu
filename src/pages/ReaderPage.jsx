@@ -4,6 +4,8 @@ import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
 import DrawingCanvas from '../components/DrawingCanvas';
+import FeedbackModal from '../components/FeedbackModal';
+
 
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
 
@@ -11,8 +13,9 @@ export default function ReaderPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { cycleTheme, themeIcon } = useTheme();
-    const { updateProgress, markAsRead, rateStory, ratings, lastRead } = useReading();
+    const { updateProgress, markAsRead, rateStory, ratings, lastRead, saveDrawing, userDrawings } = useReading();
     const { stories, isLoading, error } = useStories();
+
 
     const story = stories.find((s) => s.id === parseInt(id));
     const contentRef = useRef(null);
@@ -26,7 +29,15 @@ export default function ReaderPage() {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const [tempDrawing, setTempDrawing] = useState(null);
+    
+    // Check if there's already a drawing for this story
+    const existingDrawing = userDrawings.find(d => d.storyId === parseInt(id));
+    const [tempDrawing, setTempDrawing] = useState(existingDrawing?.dataUrl || null);
+    const [workshopOpen, setWorkshopOpen] = useState(false);
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+
+
+
 
     // Restore scroll position
     useEffect(() => {
@@ -70,16 +81,34 @@ export default function ReaderPage() {
     // Mark as read
     useEffect(() => { if (scrollPercent >= 95) markAsRead(parseInt(id)); }, [scrollPercent, id, markAsRead]);
 
-    const handleContentClick = () => {
+    const handleContentClick = (e) => {
         setHeaderVisible(true);
         clearTimeout(hideTimeout.current);
         hideTimeout.current = setTimeout(() => { if (window.scrollY > 100) setHeaderVisible(false); }, 3000);
+
+        // Event delegation for data-driven feedback buttons from WP content
+        const target = e.target.closest('button');
+        if (target) {
+            if (target.id === 'mese-feedback-down') {
+                e.preventDefault();
+                setIsFeedbackModalOpen(true);
+            } else if (target.id === 'mese-feedback-up') {
+                e.preventDefault();
+                alert('Örülünk, hogy tetszett! ❤️');
+                handleRate('up');
+            }
+        }
     };
+
 
     const handleRate = (rating) => {
         setCurrentRating(rating);
         rateStory(parseInt(id), rating);
+        if (rating === 'down') {
+            setIsFeedbackModalOpen(true);
+        }
     };
+
 
     const getNextStory = () => {
         const idx = stories.findIndex((s) => s.id === parseInt(id));
@@ -107,8 +136,10 @@ export default function ReaderPage() {
     const handleSaveDrawing = (dataUrl) => {
         setTempDrawing(dataUrl);
         setIsDrawingMode(false);
-        setUploadedFile({ name: 'Saját rajz.png' }); // Mock file object
+        saveDrawing(parseInt(id), dataUrl);
+        setUploadedFile({ name: 'Saját rajz.png' });
     };
+
 
     if (isLoading) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⏳ Betöltés...</div>;
     if (error) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⚠️ Hiba: {error}</div>;
@@ -184,94 +215,11 @@ export default function ReaderPage() {
                 {/* Story text */}
                 <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
 
-                {/* ── Alkotóműhely — Creative Workshop ── */}
-                <div id="alkotomuhely" style={{
-                    margin: '2.5em 0 1em', padding: '2em 1.5em',
-                    background: 'linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%)',
-                    borderRadius: 20, textAlign: 'center',
-                    border: '2px solid rgba(255,200,100,.25)',
-                    boxShadow: '0 4px 24px rgba(0,0,0,.4)',
-                    overflow: 'hidden'
-                }}>
-                    {!isDrawingMode ? (
-                        <>
-                            <div style={{ fontSize: '2.8em', marginBottom: '.2em' }}>🎨</div>
-                            <h3 style={{ color: '#ffd700', fontSize: '1.3em', margin: '0 0 .5em', letterSpacing: .5 }}>
-                                Készítsd el a saját illusztrációdat!
-                            </h3>
-                            <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '.95em', margin: '0 0 1.4em', lineHeight: 1.65, maxWidth: 440, display: 'inline-block' }}>
-                                Rajzold le, mi tetszett a legjobban a mesében, vagy tölts fel egy fotót, és a{' '}
-                                <strong style={{ color: '#ffd700' }}>Mesegép</strong> jövő héten életre kelti!
-                            </p>
-                            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                <button
-                                    className="mese-btn"
-                                    onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}
-                                    style={{
-                                        background: 'linear-gradient(135deg,#ffd700,#ffaa00)',
-                                        color: '#1a1a2e', border: 'none',
-                                        padding: '.75em 1.8em', borderRadius: 50,
-                                        fontSize: '1em', fontWeight: 700, cursor: 'pointer',
-                                        letterSpacing: .5, boxShadow: '0 4px 16px rgba(255,200,0,.35)',
-                                        transition: 'transform .15s, box-shadow .15s',
-                                    }}
-                                >
-                                    ✏️ Rajzolok egyet
-                                </button>
-                                
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    id="mese-drawing-file-input"
-                                    accept="image/*"
-                                    style={{ display: 'none' }}
-                                    onChange={handleFileChange}
-                                />
-                                <button
-                                    className="mese-btn"
-                                    onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                                    style={{
-                                        background: 'rgba(255,255,255,0.08)',
-                                        color: 'white', border: '1px solid rgba(255,255,255,0.2)',
-                                        padding: '.75em 1.8em', borderRadius: 50,
-                                        fontSize: '1em', fontWeight: 600, cursor: 'pointer',
-                                        backdropFilter: 'blur(5px)'
-                                    }}
-                                >
-                                    📸 Fotó feltöltése
-                                </button>
-                            </div>
-
-                            {tempDrawing && (
-                                <div style={{ marginTop: '1.5em', position: 'relative', display: 'inline-block' }}>
-                                    <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '12px', border: '2px solid #ffd700' }} />
-                                    <div style={{ position: 'absolute', top: -10, right: -10, background: '#ffd700', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#1a1a2e' }}>✨</div>
-                                </div>
-                            )}
-
-                            {uploadedFile && (
-                                <p style={{ color: '#ffd700', fontSize: '.85em', marginTop: '1.2em' }}>
-                                    ✅ <strong>{uploadedFile.name}</strong> — elmentve! A Mesegép hamarosan dolgozni kezd rajta. 🪄
-                                </p>
-                            )}
-                            <p style={{ color: 'rgba(255,255,255,.35)', fontSize: '.72em', marginTop: '1em' }}>Támogatott: szabadkézi rajz, PNG, JPG</p>
-                        </>
-                    ) : (
-                        <div className="fade-in">
-                            <h3 style={{ color: '#ffd700', fontSize: '1.1em', margin: '0 0 1em' }}>Mesenet Rajztábla</h3>
-                            <DrawingCanvas 
-                                onSave={handleSaveDrawing} 
-                                onCancel={() => setIsDrawingMode(false)} 
-                            />
-                        </div>
-                    )}
-                </div>
-
-                {/* End Block */}
+                {/* End Block Container */}
                 <div className="end-block">
                     <div className="end-marker">~ Vége ~</div>
 
-                    {/* Rating */}
+                    {/* 1. Feedback UI (Tetszett a mese?) */}
                     <div className="rating-card">
                         <div className="rating-question">Tetszett a mese?</div>
                         <div className="rating-buttons">
@@ -280,22 +228,14 @@ export default function ReaderPage() {
                         </div>
                     </div>
 
-                    {/* Share */}
-                    <div className="share-section" style={{ marginBottom: '20px' }}>
-                        <button className="next-story-btn" onClick={handleShare}
-                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
-                            📤 Megosztás
-                        </button>
-                    </div>
-
-                    {/* Discussion */}
+                    {/* 2. Questions Accordion (Miről beszélgessünk?) */}
                     <div className="discussion-card">
                         <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }} id="discussion-toggle">
                             <span>💬 Miről beszélgessünk?</span>
                             <span className={`discussion-arrow ${discussionOpen ? 'open' : ''}`}>▼</span>
                         </button>
                         <div className={`discussion-body ${discussionOpen ? 'open' : ''}`}>
-                            {story.discussionQuestions.map((q, i) => (
+                            {story.discussionQuestions && story.discussionQuestions.map((q, i) => (
                                 <div key={i} className="discussion-question">
                                     <span className="discussion-question-emoji">{QUESTION_EMOJIS[i] || '💬'}</span>
                                     <span>„{q}"</span>
@@ -304,12 +244,71 @@ export default function ReaderPage() {
                         </div>
                     </div>
 
-                    {/* Next story */}
+                    {/* 3. Share Section (Megosztás) */}
+                    <div className="share-section" style={{ marginBottom: '20px' }}>
+                        <button className="next-story-btn" onClick={handleShare}
+                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
+                            📤 Megosztás
+                        </button>
+                    </div>
+
+                    {/* 4. Alkotóműhely Accordion (Rajzolok egyet) - STYLED DARK & YELLOW */}
+                    <div className="discussion-card" style={{ 
+                        background: 'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)', 
+                        border: '1.5px solid rgba(255,200,100,0.3)' 
+                    }}>
+                        <button className="discussion-toggle" 
+                            onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }} 
+                            style={{ color: '#ffd700' }}
+                        >
+                            <span>🎨 Rajzolok egyet</span>
+                            <span className={`discussion-arrow ${workshopOpen ? 'open' : ''}`} style={{ color: '#ffd700' }}>▼</span>
+                        </button>
+                        
+                        <div className={`accordion-body ${workshopOpen ? 'open' : ''}`} style={{ textAlign: 'center' }}>
+                            {!isDrawingMode ? (
+                                <div style={{ padding: '10px 0 20px' }}>
+                                    <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎨</div>
+                                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                                        Rajzold le, mi tetszett a legjobban a mesében, tölts fel egy fotót, és a <strong style={{color:'#ffd700'}}>Mesegép</strong> jövő héten életre kelti!
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                        <button className="mese-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}
+                                            style={{ background: 'linear-gradient(135deg,#ffd700,#ffaa00)', color: '#1a1a2e', border: 'none', padding: '10px 20px', borderRadius: '50px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(255,200,0,0.3)' }}>
+                                            ✏️ Rajzolok egyet
+                                        </button>
+                                        <button className="mese-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                                            style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 20px', borderRadius: '50px', fontWeight: 600, cursor: 'pointer' }}>
+                                            📸 Fotó feltöltése
+                                        </button>
+                                    </div>
+                                    <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
+                                    
+                                    {tempDrawing && (
+                                        <div style={{ marginTop: '1.5rem', position: 'relative', display: 'inline-block' }}>
+                                            <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700' }} />
+                                            <div style={{ position: 'absolute', top: -8, right: -8, background: '#ffd700', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#1a1a2e' }}>✨</div>
+                                        </div>
+                                    )}
+                                    {uploadedFile && (
+                                        <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — elmentve!</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div style={{ padding: '20px 0' }}>
+                                    <DrawingCanvas onSave={handleSaveDrawing} onCancel={() => setIsDrawingMode(false)} />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* 5. Next story Button */}
                     <button className="next-story-btn" id="next-story-btn"
                         onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
                         → Következő mese
                     </button>
                 </div>
+
             </div>
 
             {/* Progress bar */}
@@ -320,7 +319,15 @@ export default function ReaderPage() {
                 <div className="reader-progress-text">{scrollPercent}%</div>
             </div>
 
+            <FeedbackModal 
+                isOpen={isFeedbackModalOpen} 
+                onClose={() => setIsFeedbackModalOpen(false)} 
+                storyTitle={story.title}
+                storyId={id}
+            />
+
             <style>{`@keyframes meseFadeIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}`}</style>
         </div>
+
     );
 }

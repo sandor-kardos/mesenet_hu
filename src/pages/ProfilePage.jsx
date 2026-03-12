@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
+import { useReading } from '../context/ReadingContext';
+import { useStories } from '../context/StoryContext';
+
 
 export default function ProfilePage() {
   const { theme, cycleTheme, themeIcon } = useTheme();
+  const { userDrawings, deleteDrawing } = useReading();
+  const { stories } = useStories();
   const [activeModal, setActiveModal] = useState(null); // 'aszf' | 'privacy' | null
+
 
   return (
     <div className="page-content fade-in">
@@ -50,6 +56,89 @@ export default function ProfilePage() {
           <button className="btn btn-primary">Próbáld ki ingyen</button>
         </div>
       </div>
+
+      {/* Saját Galéria Section */}
+      <div className="gallery-section" style={{ padding: '0 20px 30px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.4rem' }}>🎨 Saját Galéria</h2>
+          <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>{userDrawings.length} alkotás</span>
+        </div>
+        
+        {userDrawings.length === 0 ? (
+          <div style={{ 
+            padding: '40px 20px', 
+            background: 'rgba(255,255,255,0.03)', 
+            borderRadius: '16px', 
+            textAlign: 'center',
+            border: '1px dashed rgba(255,255,255,0.1)'
+          }}>
+            <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🖼️</div>
+            <p className="theme-aware-muted" style={{ margin: 0, fontWeight: 500 }}>Még nincsenek mentett rajzaid.</p>
+            <p className="theme-aware-muted" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '5px' }}>Olvasd el a kedvenc meséd, és készíts hozzá egy rajzot!</p>
+
+
+          </div>
+        ) : (
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', 
+            gap: '12px' 
+          }}>
+            {userDrawings.map((drawing) => {
+              const story = stories.find(s => s.id === drawing.storyId);
+              return (
+                <div key={drawing.id} className="gallery-item" style={{ 
+                  position: 'relative',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  aspectRatio: '1/1',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+                }}>
+                  <img 
+                    src={drawing.dataUrl} 
+                    alt={`Rajz: ${story?.title || 'Ismeretlen mese'}`} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    bottom: 0, left: 0, right: 0,
+                    padding: '8px',
+                    background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                    fontSize: '0.7rem',
+                    color: 'white',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                    {story?.title || 'Mese rajz'}
+                  </div>
+                  <button 
+                    onClick={() => { if(confirm('Biztosan törlöd ezt a rajzot?')) deleteDrawing(drawing.id); }}
+                    style={{
+                      position: 'absolute',
+                      top: '5px', right: '5px',
+                      width: '24px', height: '24px',
+                      borderRadius: '50%',
+                      background: 'rgba(0,0,0,0.5)',
+                      border: 'none',
+                      color: 'white',
+                      fontSize: '14px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
 
       <div className="support-section" style={{ padding: '0 20px 24px', textAlign: 'center' }}>
         <a 

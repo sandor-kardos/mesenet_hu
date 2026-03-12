@@ -107,7 +107,8 @@ CRITICAL CONTENT RULE:
 Strict Formatting Rules:
 - Output MUST be a valid JSON object. No markdown code fences, no extra text outside the JSON.
 - Use HTML <p> tags for paragraphs inside the "content" field.
-- CRITICAL: Inside the "content" JSON string value, use ONLY single quotes for any HTML attributes. NEVER use double quotes inside HTML attributes, as they will break JSON parsing.
+- MANDATORY: Every story record MUST have a high-quality 'scene_description' for image generation.
+- IMAGE RULE: The generated image prompt MUST start with "Square 1:1 ratio, no borders."
 - Synchron-Súgó: Every dialogue line MUST start with a character-emoji assigned to that specific animal/character. E.g. 🦊 'Hello there!'
 - Ensure every animal character gets its own unique emoji consistently applied throughout the ENTIRE story.
 - Whispering/Quiet: Use <i> tags (Italicized text).
@@ -191,15 +192,16 @@ Output Format: Return ONLY a valid JSON object with these exact keys:
             print("[!] Warning: scene_description missing from Claude response. Using title as fallback.")
             scene = data.get("title", "A magical fairy tale scene")
         image_prompt = (
+            "Square 1:1 ratio, no borders. "
             "A classic European folk-tale children's book illustration. "
             f"SCENE: {scene} "
             "STYLE & MOOD: 2D flat vector art mixed with subtle watercolor textures. "
             "Minimalist and atmospheric. Vintage storybook aesthetic. "
-            "Muted, rich color palette suitable for dark mode and bedtime reading. "
-            "Strong use of shadows, silhouettes, and soft moody lighting. 3:4 ratio "
-            "RESTRICTIONS: NO 3D, NO CGI, NO Pixar, NO Disney style, NO frame, "
-            "no glossy plastic textures, no text, no hyperrealism, no decorative frame."
+            "Muted, rich color palette suitbale for dark mode. "
+            "Strong use of shadows, silhouettes, and soft moody lighting. 1:1 square ratio. "
+            "RESTRICTIONS: NO borders, NO 3D, NO Pixar, NO Disney style. "
         )
+
         data["image_prompt"] = image_prompt
         
         print(f"[*] Tags from Claude: {data.get('tags', [])}")
@@ -220,8 +222,9 @@ def generate_hero_image(prompt):
             model=GEMINI_IMAGE_MODEL,
             prompt=prompt,
             number_of_images=1,
-            aspect_ratio="3:4",
+            aspect_ratio="1:1",
         )
+
         if not result.generated_images:
             raise Exception("No image returned from Gemini.")
         return result.generated_images[0]
@@ -340,64 +343,271 @@ def upload_to_wp(story_data, media_id=None):
     image_prompt = story_data.get("image_prompt", "")
     content = story_data.get("content", "")
 
-    # Feature 1: Wrap featured image in a lightbox container
-    # (The image is rendered by the theme via featured_media; we inject a JS hook)
-    LIGHTBOX_CSS_JS = """
+    TEXT_SIZE_CONTROLS_HTML = """
+<div class='mese-accessibility-controls' style='margin: 1.5em 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); justify-content: center;'>
+    <span style='font-size: 1.2em; opacity: 0.7;'>🔍</span>
+    <button class='text-size-btn active' onclick='changeMeseTextSize(100, this)' style='background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; transition: all 0.2s;'>100%</button>
+    <button class='text-size-btn' onclick='changeMeseTextSize(125, this)' style='background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; transition: all 0.2s;'>125%</button>
+    <button class='text-size-btn' onclick='changeMeseTextSize(150, this)' style='background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; transition: all 0.2s;'>150%</button>
+</div>
+"""
+    content = f"<div class='mese-content-wrapper' style='transition: font-size 0.3s ease;'>{content}</div>" + TEXT_SIZE_CONTROLS_HTML
+
+
+
+    # Feature 2: Feedback System (Tetszett a mese?)
+    FEEDBACK_SYSTEM_HTML = """
+<div class='mese-feedback-section' style='margin: 2.5em 0 1em; padding: 1.5em; background: rgba(255,255,255,0.03); border-radius: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.1);'>
+    <p style='color: #ffd700; font-weight: 600; margin-bottom: 1em; font-size: 1.1em;'>Tetszett a mese?</p>
+    <div style='display: flex; gap: 20px; justify-content: center;'>
+        <button id='mese-feedback-up' class='feedback-btn' style='background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 20px; font-size: 1.8em; cursor: pointer; transition: all 0.2s;'>👍</button>
+        <button id='mese-feedback-down' class='feedback-btn' style='background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 20px; font-size: 1.8em; cursor: pointer; transition: all 0.2s;'>👎</button>
+    </div>
+</div>
+"""
+
+
+
+    # Feature 3: Alkotóműhely (Creative Workshop) Accordion - 1:1 Styling
+    ALKOTOMUHELY_HTML = """
+<div class='mese-alkotomuhely-accordion' style='margin-top: 1.5em; margin-bottom: 2em;'>
+  <button onclick='toggleMeseWorkshop()' style='width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 1.25em 1.5em; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); color: #ffd700; border: 2px solid rgba(255,100,0,.3); border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+    <span>🎨 Rajzolok egyet</span>
+    <span id='mese-workshop-arrow' style='transition: transform 0.3s ease;'>🔽</span>
+  </button>
+  <div id='mese-workshop-content' style='display: none; padding: 2em 1.5em; background: rgba(26, 26, 46, 0.95); border-radius: 0 0 12px 12px; border: 1.5px solid rgba(255,100,0,.2); border-top: none; text-align: center;'>
+    <p style='color:rgba(255,255,255,.85);font-size:1em;margin:0 0 1.5em;line-height:1.6;'>
+      Rajzold le a kedvenc részedet, és mi jövő héten <strong style='color:#ffd700;'>életre keltjük</strong>!
+    </p>
+    <div id='mese-drawing-preview-container' style='display:none; margin-bottom:20px;'>
+        <img id='mese-drawing-preview' src='' style='width:240px; height:240px; object-fit:cover; border:3px solid #ffd700; border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);' />
+    </div>
+    <div style='display: flex; gap: 10px; justify-content: center;'>
+      <input type='file' id='mese-drawing-file-input' accept='image/*' style='display:none;' onchange='handleMeseDrawingSelect(this)'/>
+      <button class='mese-btn' style='background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a1a2e;border:none;padding:.9em 2em;border-radius:50px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(255,200,0,.3);' onclick='document.getElementById("mese-drawing-file-input").click()'>
+        ✏️ Feltöltöm a rajzom
+      </button>
+    </div>
+    <p id='mese-upload-status' style='color:#ffd700; font-size:0.9em; margin-top:1.2em; display:none; font-weight:600;'>✨ Szuper! Elmentettük a rajzodat a galériádba.</p>
+  </div>
+</div>
+"""
+
+    # Feature 4: Questions & Share
+    QUESTIONS_ACCORDION_HTML = f"""
+<div class='mese-questions-accordion' style='margin-top: 1.5em; margin-bottom: 1em;'>
+  <button onclick='toggleMeseQuestions()' style='width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 1.25em 1.5em; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); color: #ffd700; border: 2px solid rgba(255,100,0,.3); border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 1.1em; box-shadow: 0 4px 15px rgba(0,0,0,0.2);'>
+    <span>💬 Miről beszélgessünk?</span>
+    <span id='mese-questions-arrow' style='transition: transform 0.3s ease;'>🔽</span>
+  </button>
+  <div id='mese-questions-content' style='display: none; padding: 1.5em; background: rgba(26, 26, 46, 0.95); border-radius: 0 0 12px 12px; border: 1.5px solid rgba(255,100,0,.2); border-top: none;'>
+    <ul style='list-style: none; padding: 0; margin: 0; text-align: left;'>
+      <li style='margin-bottom: 12px; display: flex; gap: 12px; align-items: start; color: #fff;'>
+        <span style='font-size:1.3em;'>🤔</span>
+        <span style='padding-top:2px;'>{story_data.get("question_1", "")}</span>
+      </li>
+      <li style='margin-bottom: 12px; display: flex; gap: 12px; align-items: start; color: #fff;'>
+        <span style='font-size:1.3em;'>💡</span>
+        <span style='padding-top:2px;'>{story_data.get("question_2", "")}</span>
+      </li>
+      <li style='display: flex; gap: 12px; align-items: start; color: #fff;'>
+        <span style='font-size:1.3em;'>🌟</span>
+        <span style='padding-top:2px;'>{story_data.get("question_3", "")}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+"""
+
+
+    SHARE_SECTION_HTML = """
+<div class='mese-share-section' style='margin-bottom: 1em;'>
+    <button onclick='handleMeseShare()' style='width: 100%; padding: 14px; border-radius: 12px; background: #F0F0F8; color: #6B6B80; border: 1.5px solid #E8E8F0; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;'>
+        📤 Megosztás
+    </button>
+</div>
+"""
+
+    NEXT_STORY_HTML = """
+<div class='mese-next-story-section' style='margin-top: 2em; text-align: center;'>
+    <button onclick='handleMeseNext()' style='padding: 14px 28px; border-radius: 16px; background: #6C63FF; color: white; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 15px rgba(108, 99, 255, 0.3); font-size: 1.1em;'>
+        → Következő mese
+    </button>
+</div>
+"""
+
+
+    # Combined CSS and JS for all features
+    MESE_POST_SYSTEM = """
 <style>
-.mese-image-container{position:relative;cursor:zoom-in;display:inline-block;width:100%;text-align:center;margin-bottom:1.5em;}
-.mese-image-container img{max-width:100%;border-radius:12px;transition:transform .3s ease,box-shadow .3s ease;}
+.mese-image-container{position:relative;display:inline-block;width:100%;text-align:center;margin-bottom:1.5em;}
+.mese-image-container img{max-width:100%;border-radius:12px;transition:box-shadow .3s ease;cursor:pointer;}
 .mese-image-container img:hover{box-shadow:0 8px 32px rgba(0,0,0,.35);}
-#mese-lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;cursor:zoom-out;}
+#mese-lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;align-items:center;justify-content:center;cursor:zoom-out;}
 #mese-lightbox-overlay.active{display:flex;}
-#mese-lightbox-overlay img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;animation:meseFadeIn .25s ease;}
-@keyframes meseFadeIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+#mese-lightbox-overlay img{max-width:100vw;max-height:100vh;object-fit:contain;animation:meseFadeIn .25s ease;}
+@keyframes meseFadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes meseSlideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.reason-pill:hover{background:rgba(255,215,0,0.1) !important; color:#ffd700 !important; border-color:#ffd700 !important;}
+.reason-pill.selected{background:#ffd700 !important; color:#1a1a2e !important; font-weight:bold; border-color:#ffd700 !important;}
+.feedback-btn:hover{transform:scale(1.1); background:rgba(255,255,255,0.1) !important;}
+.feedback-option:hover{background:rgba(255,215,0,0.1) !important; border-color:#ffd700 !important; color:#ffd700 !important;}
+.text-size-btn.active{background: rgba(255,215,0,0.15) !important; border-color: #ffd700 !important; color: #ffd700 !important; font-weight: 700;}
+
+.zoom-hint-icon {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 10;
+}
+.zoom-hint-icon.visible { opacity: 0.4; }
+
 </style>
-<div id='mese-lightbox-overlay'><img id='mese-lightbox-img' src='' alt='Mese illusztráció nagyítva'/></div>
 <script>
+
+
+function toggleMeseWorkshop() {
+
+
+    var content = document.getElementById('mese-workshop-content');
+    var arrow = document.getElementById('mese-workshop-arrow');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function toggleMeseQuestions() {
+    var content = document.getElementById('mese-questions-content');
+    var arrow = document.getElementById('mese-questions-arrow');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        arrow.style.transform = 'rotate(180deg)';
+    } else {
+        content.style.display = 'none';
+        arrow.style.transform = 'rotate(0deg)';
+    }
+}
+
+function handleMeseShare() {
+    if (navigator.share) {
+        navigator.share({ title: document.title, url: window.location.href });
+    } else {
+        alert('Megosztva! 📤');
+    }
+}
+
+function handleMeseNext() {
+    // This will depend on implementation, usually triggers app level event
+    window.location.reload(); 
+}
+
+function handleMeseDrawingSelect(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('mese-drawing-preview').src = e.target.result;
+            document.getElementById('mese-drawing-preview-container').style.display = 'inline-block';
+            document.getElementById('mese-upload-status').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function changeMeseTextSize(percent, btn) {
+    var wrapper = document.querySelector('.mese-content-wrapper');
+    if (wrapper) wrapper.style.fontSize = percent + '%';
+    document.querySelectorAll('.text-size-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
 (function(){
-  var overlay=document.getElementById('mese-lightbox-overlay');
-  var lbImg=document.getElementById('mese-lightbox-img');
+  // Create Lightbox Overlay Dynamically
+  var overlay = document.createElement('div');
+  overlay.id = 'mese-lightbox-overlay';
+  var lbImg = document.createElement('img');
+  lbImg.id = 'mese-lightbox-img';
+  lbImg.alt = 'Mese illusztráció nagyítva';
+  overlay.appendChild(lbImg);
+  document.body.appendChild(overlay);
+  
   document.querySelectorAll('.mese-image-container img,.wp-post-image').forEach(function(img){
-    img.style.cursor='zoom-in';
-    img.addEventListener('dblclick',function(e){
+    var container = img.closest('.mese-image-container') || img.parentElement;
+    
+    // Inject hint icon
+    var hint = document.createElement('div');
+    hint.className = 'zoom-hint-icon';
+    hint.innerHTML = '🔍';
+    if (container) {
+        container.style.position = 'relative';
+        container.appendChild(hint);
+    }
+
+    // Single click: Show hint for 3s
+    img.addEventListener('click', function(e) {
+      hint.classList.add('visible');
+      setTimeout(function() { hint.classList.remove('visible'); }, 3000);
+    });
+
+
+    // DOUBLE-CLICK: Zoom
+    img.addEventListener('dblclick', function(e) {
+      e.preventDefault();
       e.stopPropagation();
-      lbImg.src=this.src;
+      lbImg.src = this.src;
       overlay.classList.add('active');
     });
   });
+
+  
   overlay.addEventListener('click',function(){overlay.classList.remove('active');});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')overlay.classList.remove('active');});
 })();
 </script>"""
 
-    # Feature 2: Alkotóműhely (Creative Workshop) CTA section
-    ALKOTOMUHELY_HTML = """
-<div class='mese-alkotomuhely' style='margin-top:2.5em;padding:2em 1.5em;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);border-radius:20px;text-align:center;border:2px solid rgba(255,200,100,.25);box-shadow:0 4px 24px rgba(0,0,0,.4);'>
-  <div style='font-size:3em;margin-bottom:.3em;'>🎨</div>
-  <h3 style='color:#ffd700;font-size:1.4em;margin:0 0 .6em;letter-spacing:.5px;'>Készítsd el a saját illusztrációdat!</h3>
-  <p style='color:rgba(255,255,255,.8);font-size:1em;margin:0 0 1.4em;line-height:1.6;max-width:480px;display:inline-block;'>
-    Rajzold le, mi tetszett a legjobban a mesében, töltsd fel, és a <strong style='color:#ffd700;'>Mesegép</strong> jövő héten életre kelti!
-  </p>
-  <div>
-    <input type='file' id='mese-drawing-file-input' accept='image/*' style='display:none;'/>
-    <button id='mese-drawing-upload-btn' class='mese-btn'
-      style='background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a1a2e;border:none;padding:.75em 2em;border-radius:50px;font-size:1em;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(255,200,0,.35);'
-      onmouseover='this.style.transform="scale(1.05)";this.style.boxShadow="0 6px 20px rgba(255,200,0,.55)"'
-      onmouseout='this.style.transform="scale(1)";this.style.boxShadow="0 4px 16px rgba(255,200,0,.35)"'
-      onclick='document.getElementById(\"mese-drawing-file-input\").click()'>
-      ✏️ Rajz feltöltése
-    </button>
-  </div>
-  <p style='color:rgba(255,255,255,.4);font-size:.75em;margin-top:1em;'>PNG, JPG vagy rajz · max. 10 MB</p>
-</div>"""
 
-    # Assemble final content
-    content += ALKOTOMUHELY_HTML
-    content += LIGHTBOX_CSS_JS
+    # Final Assembly Order:
+    # 1. Story Text
+    # 2. Feedback (👍/👎)
+    # 3. Text Size Buttons
+    # 4. Questions Accordion
+    # 5. Share Section
+    # 6. Drawing Accordion
+    # 7. Next Story
+    
+    final_post_content = f"<div class='mese-content-wrapper' style='transition: font-size 0.3s ease;'>{story_data.get('content', '')}</div>"
+    final_post_content += FEEDBACK_SYSTEM_HTML
+    final_post_content += TEXT_SIZE_CONTROLS_HTML
+    final_post_content += QUESTIONS_ACCORDION_HTML
+    final_post_content += SHARE_SECTION_HTML
+    final_post_content += ALKOTOMUHELY_HTML
+    final_post_content += NEXT_STORY_HTML
+    final_post_content += MESE_POST_SYSTEM
+    
+    content = final_post_content
 
-    # Append image prompt as HTML comment (easy to copy from WP source)
+
+
+    # Append Image Prompt using a strictly hidden div (Gutenberg Custom HTML block style)
     if image_prompt:
-        content += f"\n\n<!-- IMAGE PROMPT:\n{image_prompt}\n-->"
+        content += f'\n<div id="mese-hidden-image-prompt" style="display: none;">{image_prompt}</div>'
+
 
 
     payload = {

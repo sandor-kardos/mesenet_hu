@@ -1595,6 +1595,35 @@ input:checked + .slider:before {
   animation: fadeIn 0.4s ease;
 }
 
+.theme-aware-muted {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+[data-theme="light"] .theme-aware-muted,
+[data-theme="sepia"] .theme-aware-muted {
+  color: var(--text-primary);
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .theme-aware-muted {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Ensure consistent accordion animations */
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+}
+
+.accordion-body.open {
+  max-height: 1000px; /* Large enough for drawing canvas */
+  padding: 0 20px 20px;
+}
+
+
 /* Mobile adjustments */
 @media (max-width: 375px) {
   .moral-card {
