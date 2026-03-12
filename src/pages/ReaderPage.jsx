@@ -16,23 +16,31 @@ export default function ReaderPage() {
     const story = stories.find((s) => s.id === parseInt(id));
     const contentRef = useRef(null);
     const hideTimeout = useRef(null);
+    const fileInputRef = useRef(null);
 
     const [scrollPercent, setScrollPercent] = useState(0);
     const [headerVisible, setHeaderVisible] = useState(true);
     const [discussionOpen, setDiscussionOpen] = useState(false);
     const [currentRating, setCurrentRating] = useState(ratings[id] || null);
-    const [ratingAnimating, setRatingAnimating] = useState(false);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [uploadedFile, setUploadedFile] = useState(null);
 
-    // Scroll to saved position on mount
+    // Restore scroll position
     useEffect(() => {
         if (lastRead && lastRead.storyId === parseInt(id) && lastRead.scrollPercent > 0) {
             setTimeout(() => {
                 const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-                const targetScroll = (lastRead.scrollPercent / 100) * scrollHeight;
-                window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                window.scrollTo({ top: (lastRead.scrollPercent / 100) * scrollHeight, behavior: 'smooth' });
             }, 100);
         }
     }, [id, lastRead]);
+
+    // Close lightbox on Escape
+    useEffect(() => {
+        const onKey = (e) => { if (e.key === 'Escape') setLightboxOpen(false); };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     // Track scroll
     const handleScroll = useCallback(() => {
@@ -40,138 +48,177 @@ export default function ReaderPage() {
         const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
         const percent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
         setScrollPercent(Math.min(100, Math.round(percent)));
-
-        // Auto-hide header
         setHeaderVisible(false);
         clearTimeout(hideTimeout.current);
-        hideTimeout.current = setTimeout(() => {
-            setHeaderVisible(true);
-        }, 150);
+        hideTimeout.current = setTimeout(() => setHeaderVisible(true), 150);
     }, []);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            clearTimeout(hideTimeout.current);
-        };
+        return () => { window.removeEventListener('scroll', handleScroll); clearTimeout(hideTimeout.current); };
     }, [handleScroll]);
 
-    // Save progress periodically
+    // Save progress
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (scrollPercent > 0) {
-                updateProgress(parseInt(id), scrollPercent);
-            }
-        }, 5000);
+        const interval = setInterval(() => { if (scrollPercent > 0) updateProgress(parseInt(id), scrollPercent); }, 5000);
         return () => clearInterval(interval);
     }, [scrollPercent, id, updateProgress]);
 
-    // Mark as read when reaching end
-    useEffect(() => {
-        if (scrollPercent >= 95) {
-            markAsRead(parseInt(id));
-        }
-    }, [scrollPercent, id, markAsRead]);
+    // Mark as read
+    useEffect(() => { if (scrollPercent >= 95) markAsRead(parseInt(id)); }, [scrollPercent, id, markAsRead]);
 
-    // Show header on tap
     const handleContentClick = () => {
         setHeaderVisible(true);
         clearTimeout(hideTimeout.current);
-        hideTimeout.current = setTimeout(() => {
-            if (window.scrollY > 100) {
-                setHeaderVisible(false);
-            }
-        }, 3000);
+        hideTimeout.current = setTimeout(() => { if (window.scrollY > 100) setHeaderVisible(false); }, 3000);
     };
 
     const handleRate = (rating) => {
         setCurrentRating(rating);
-        setRatingAnimating(true);
         rateStory(parseInt(id), rating);
-        setTimeout(() => setRatingAnimating(false), 400);
     };
 
     const getNextStory = () => {
-        const currentIndex = stories.findIndex((s) => s.id === parseInt(id));
-        const nextIndex = (currentIndex + 1) % stories.length;
-        return stories[nextIndex];
+        const idx = stories.findIndex((s) => s.id === parseInt(id));
+        return stories[(idx + 1) % stories.length];
     };
 
     const handleShare = async (e) => {
         e.stopPropagation();
         if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `Nézd meg ezt a képet a(z) ${story.title} meséhez!`,
-                    text: 'A Mesenet appban olvasom ezt a szuper mesét!',
-                    url: window.location.href,
-                });
-            } catch (err) {
-                console.log('Share failed', err);
-            }
+            try { await navigator.share({ title: story.title, text: 'A Mesenet appban olvasom!', url: window.location.href }); }
+            catch (err) { console.log('Share failed', err); }
         } else {
             alert('A megosztás nem támogatott ezen az eszközön.');
         }
     };
 
-    if (isLoading) {
-        return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ Betöltés...</div>;
-    }
+    const handleFileChange = (e) => { const f = e.target.files[0]; if (f) setUploadedFile(f); };
 
-    if (error) {
-        return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⚠️ Hiba: {error}</div>;
-    }
-
-    if (!story) {
-        return (
-            <div className="reader-shell">
-                <div className="placeholder-page">
-                    <div className="placeholder-emoji">📖</div>
-                    <div className="placeholder-title">Mese nem található</div>
-                    <button className="next-story-btn" onClick={() => navigate('/')}>
-                        ← Vissza a főoldalra
-                    </button>
-                </div>
+    if (isLoading) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⏳ Betöltés...</div>;
+    if (error) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⚠️ Hiba: {error}</div>;
+    if (!story) return (
+        <div className="reader-shell">
+            <div className="placeholder-page">
+                <div className="placeholder-emoji">📖</div>
+                <div className="placeholder-title">Mese nem található</div>
+                <button className="next-story-btn" onClick={() => navigate('/')}>← Vissza a főoldalra</button>
             </div>
-        );
-    }
+        </div>
+    );
 
-    // Replace <br/> or inner HTML safely or split simple newlines. 
-    // WordPress usually sends <p> tags, so using dangeroulySetInnerHTML is safer, but for now we fallback softly:
     const contentHtml = story.content.includes('<p>') ? story.content : story.content.split('\n\n').map(p => `<p>${p}</p>`).join('');
-    
     const nextStory = getNextStory();
+    const heroImg = story.featuredImage;
 
     return (
         <div className="reader-shell" onClick={handleContentClick}>
+
+            {/* ── Lightbox Overlay ── */}
+            {lightboxOpen && heroImg && (
+                <div
+                    onClick={() => setLightboxOpen(false)}
+                    style={{
+                        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.93)',
+                        zIndex: 99999, display: 'flex', alignItems: 'center',
+                        justifyContent: 'center', cursor: 'zoom-out',
+                        animation: 'meseFadeIn .22s ease',
+                    }}
+                >
+                    <img src={heroImg} alt={story.title} style={{ maxWidth: '92vw', maxHeight: '92vh', objectFit: 'contain', borderRadius: 10 }} />
+                    <div style={{ position: 'absolute', top: 16, right: 20, color: 'rgba(255,255,255,.6)', fontSize: 28, cursor: 'pointer' }}>✕</div>
+                </div>
+            )}
+
             {/* Reader Header */}
             <div className={`reader-header ${headerVisible ? '' : 'hidden'}`}>
-                <button className="reader-back-btn" onClick={(e) => { e.stopPropagation(); navigate('/'); }}>
-                    ← Vissza
-                </button>
+                <button className="reader-back-btn" onClick={(e) => { e.stopPropagation(); navigate('/'); }}>← Vissza</button>
                 <div className="reader-title">{story.title}</div>
-                <button className="icon-btn" onClick={(e) => { e.stopPropagation(); cycleTheme(); }} aria-label="Témaváltás">
-                    {themeIcon}
-                </button>
+                <button className="icon-btn" onClick={(e) => { e.stopPropagation(); cycleTheme(); }} aria-label="Témaváltás">{themeIcon}</button>
             </div>
 
             {/* Content */}
             <div className="reader-content" ref={contentRef}>
-                {/* Static Story Hero Image */}
-                {(story.heroImage || story.featuredImage) && (
-                    <div className="story-image-container fade-in">
-                        <div className="story-image-mock" style={story.featuredImage ? { padding: 0, overflow: 'hidden', background: 'transparent', border: 'none' } : {}}>
-                            {story.featuredImage ? (
-                                <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                            ) : (
-                                story.heroImage
-                            )}
+
+                {/* Hero Image — double-click to open lightbox */}
+                {heroImg && (
+                    <div className="story-image-container fade-in" style={{ cursor: 'zoom-in' }}>
+                        <div className="story-image-mock" style={{ padding: 0, overflow: 'hidden', background: 'transparent', border: 'none', position: 'relative' }}>
+                            <img
+                                src={heroImg}
+                                alt={story.title}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                onDoubleClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                                title="Dupla kattintás a nagyításhoz"
+                            />
+                            <div style={{
+                                position: 'absolute', bottom: 8, right: 10,
+                                background: 'rgba(0,0,0,.48)', borderRadius: 20,
+                                padding: '3px 10px', fontSize: 11, color: 'rgba(255,255,255,.8)',
+                                backdropFilter: 'blur(4px)', pointerEvents: 'none',
+                            }}>🔍 dupla kattintás</div>
                         </div>
                     </div>
                 )}
+                {!heroImg && story.heroImage && (
+                    <div className="story-image-container fade-in">
+                        <div className="story-image-mock">{story.heroImage}</div>
+                    </div>
+                )}
 
+                {/* Story text */}
                 <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+
+                {/* ── Alkotóműhely — Creative Workshop ── */}
+                <div style={{
+                    margin: '2.5em 0 1em', padding: '2em 1.5em',
+                    background: 'linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%)',
+                    borderRadius: 20, textAlign: 'center',
+                    border: '2px solid rgba(255,200,100,.25)',
+                    boxShadow: '0 4px 24px rgba(0,0,0,.4)',
+                }}>
+                    <div style={{ fontSize: '2.8em', marginBottom: '.2em' }}>🎨</div>
+                    <h3 style={{ color: '#ffd700', fontSize: '1.3em', margin: '0 0 .5em', letterSpacing: .5 }}>
+                        Készítsd el a saját illusztrációdat!
+                    </h3>
+                    <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '.95em', margin: '0 0 1.4em', lineHeight: 1.65, maxWidth: 440, display: 'inline-block' }}>
+                        Rajzold le, mi tetszett a legjobban a mesében, töltsd fel, és a{' '}
+                        <strong style={{ color: '#ffd700' }}>Mesegép</strong> jövő héten életre kelti!
+                    </p>
+                    <div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            id="mese-drawing-file-input"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                        />
+                        <button
+                            id="mese-drawing-upload-btn"
+                            className="mese-btn"
+                            onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                            style={{
+                                background: 'linear-gradient(135deg,#ffd700,#ffaa00)',
+                                color: '#1a1a2e', border: 'none',
+                                padding: '.75em 2em', borderRadius: 50,
+                                fontSize: '1em', fontWeight: 700, cursor: 'pointer',
+                                letterSpacing: .5, boxShadow: '0 4px 16px rgba(255,200,0,.35)',
+                                transition: 'transform .15s, box-shadow .15s',
+                            }}
+                            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 6px 22px rgba(255,200,0,.55)'; }}
+                            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(255,200,0,.35)'; }}
+                        >
+                            ✏️ Rajz feltöltése
+                        </button>
+                    </div>
+                    {uploadedFile && (
+                        <p style={{ color: '#ffd700', fontSize: '.85em', marginTop: '1em' }}>
+                            ✅ Feltöltve: <strong>{uploadedFile.name}</strong> — hamarosan életre kel! 🪄
+                        </p>
+                    )}
+                    <p style={{ color: 'rgba(255,255,255,.35)', fontSize: '.72em', marginTop: '.8em' }}>PNG, JPG vagy rajz · max. 10 MB</p>
+                </div>
 
                 {/* End Block */}
                 <div className="end-block">
@@ -181,41 +228,22 @@ export default function ReaderPage() {
                     <div className="rating-card">
                         <div className="rating-question">Tetszett a mese?</div>
                         <div className="rating-buttons">
-                            <button
-                                className={`rate-btn ${currentRating === 'up' ? 'selected-up' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); handleRate('up'); }}
-                                id="rate-up"
-                            >
-                                👍
-                            </button>
-                            <button
-                                className={`rate-btn ${currentRating === 'down' ? 'selected-down' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); handleRate('down'); }}
-                                id="rate-down"
-                            >
-                                👎
-                            </button>
+                            <button className={`rate-btn ${currentRating === 'up' ? 'selected-up' : ''}`} onClick={(e) => { e.stopPropagation(); handleRate('up'); }} id="rate-up">👍</button>
+                            <button className={`rate-btn ${currentRating === 'down' ? 'selected-down' : ''}`} onClick={(e) => { e.stopPropagation(); handleRate('down'); }} id="rate-down">👎</button>
                         </div>
                     </div>
 
-                    {/* Share Action */}
+                    {/* Share */}
                     <div className="share-section" style={{ marginBottom: '20px' }}>
-                        <button 
-                            className="next-story-btn"
-                            onClick={handleShare}
-                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}
-                        >
+                        <button className="next-story-btn" onClick={handleShare}
+                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
                             📤 Megosztás
                         </button>
                     </div>
 
                     {/* Discussion */}
                     <div className="discussion-card">
-                        <button
-                            className="discussion-toggle"
-                            onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}
-                            id="discussion-toggle"
-                        >
+                        <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }} id="discussion-toggle">
                             <span>💬 Miről beszélgessünk?</span>
                             <span className={`discussion-arrow ${discussionOpen ? 'open' : ''}`}>▼</span>
                         </button>
@@ -230,11 +258,8 @@ export default function ReaderPage() {
                     </div>
 
                     {/* Next story */}
-                    <button
-                        className="next-story-btn"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}
-                        id="next-story-btn"
-                    >
+                    <button className="next-story-btn" id="next-story-btn"
+                        onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
                         → Következő mese
                     </button>
                 </div>
@@ -247,6 +272,8 @@ export default function ReaderPage() {
                 </div>
                 <div className="reader-progress-text">{scrollPercent}%</div>
             </div>
+
+            <style>{`@keyframes meseFadeIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}`}</style>
         </div>
     );
 }

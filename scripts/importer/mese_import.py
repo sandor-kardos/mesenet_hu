@@ -336,12 +336,70 @@ def upload_to_wp(story_data, media_id=None):
     # Resolve/create story_tag IDs
     tag_ids = get_or_create_tag_ids(story_data.get("tags", []))
     
-    # Append image prompt as HTML comment at end of content (easy to copy later)
+    # -- Build enhanced content with frontend features --
     image_prompt = story_data.get("image_prompt", "")
     content = story_data.get("content", "")
+
+    # Feature 1: Wrap featured image in a lightbox container
+    # (The image is rendered by the theme via featured_media; we inject a JS hook)
+    LIGHTBOX_CSS_JS = """
+<style>
+.mese-image-container{position:relative;cursor:zoom-in;display:inline-block;width:100%;text-align:center;margin-bottom:1.5em;}
+.mese-image-container img{max-width:100%;border-radius:12px;transition:transform .3s ease,box-shadow .3s ease;}
+.mese-image-container img:hover{box-shadow:0 8px 32px rgba(0,0,0,.35);}
+#mese-lightbox-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:99999;align-items:center;justify-content:center;cursor:zoom-out;}
+#mese-lightbox-overlay.active{display:flex;}
+#mese-lightbox-overlay img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:8px;animation:meseFadeIn .25s ease;}
+@keyframes meseFadeIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id='mese-lightbox-overlay'><img id='mese-lightbox-img' src='' alt='Mese illusztráció nagyítva'/></div>
+<script>
+(function(){
+  var overlay=document.getElementById('mese-lightbox-overlay');
+  var lbImg=document.getElementById('mese-lightbox-img');
+  document.querySelectorAll('.mese-image-container img,.wp-post-image').forEach(function(img){
+    img.style.cursor='zoom-in';
+    img.addEventListener('dblclick',function(e){
+      e.stopPropagation();
+      lbImg.src=this.src;
+      overlay.classList.add('active');
+    });
+  });
+  overlay.addEventListener('click',function(){overlay.classList.remove('active');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')overlay.classList.remove('active');});
+})();
+</script>"""
+
+    # Feature 2: Alkotóműhely (Creative Workshop) CTA section
+    ALKOTOMUHELY_HTML = """
+<div class='mese-alkotomuhely' style='margin-top:2.5em;padding:2em 1.5em;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);border-radius:20px;text-align:center;border:2px solid rgba(255,200,100,.25);box-shadow:0 4px 24px rgba(0,0,0,.4);'>
+  <div style='font-size:3em;margin-bottom:.3em;'>🎨</div>
+  <h3 style='color:#ffd700;font-size:1.4em;margin:0 0 .6em;letter-spacing:.5px;'>Készítsd el a saját illusztrációdat!</h3>
+  <p style='color:rgba(255,255,255,.8);font-size:1em;margin:0 0 1.4em;line-height:1.6;max-width:480px;display:inline-block;'>
+    Rajzold le, mi tetszett a legjobban a mesében, töltsd fel, és a <strong style='color:#ffd700;'>Mesegép</strong> jövő héten életre kelti!
+  </p>
+  <div>
+    <input type='file' id='mese-drawing-file-input' accept='image/*' style='display:none;'/>
+    <button id='mese-drawing-upload-btn' class='mese-btn'
+      style='background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a1a2e;border:none;padding:.75em 2em;border-radius:50px;font-size:1em;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(255,200,0,.35);'
+      onmouseover='this.style.transform="scale(1.05)";this.style.boxShadow="0 6px 20px rgba(255,200,0,.55)"'
+      onmouseout='this.style.transform="scale(1)";this.style.boxShadow="0 4px 16px rgba(255,200,0,.35)"'
+      onclick='document.getElementById(\"mese-drawing-file-input\").click()'>
+      ✏️ Rajz feltöltése
+    </button>
+  </div>
+  <p style='color:rgba(255,255,255,.4);font-size:.75em;margin-top:1em;'>PNG, JPG vagy rajz · max. 10 MB</p>
+</div>"""
+
+    # Assemble final content
+    content += ALKOTOMUHELY_HTML
+    content += LIGHTBOX_CSS_JS
+
+    # Append image prompt as HTML comment (easy to copy from WP source)
     if image_prompt:
         content += f"\n\n<!-- IMAGE PROMPT:\n{image_prompt}\n-->"
-    
+
+
     payload = {
         "title": story_data.get("title", "Mesebeli történet"),
         "content": content,
