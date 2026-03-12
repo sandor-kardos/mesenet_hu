@@ -1,4 +1,7 @@
 requests==2.31.0
 beautifulsoup4==4.12.3
 python-dotenv==1.0.1
-google-generativeai==0.5.2
+google-generativeai==0.8.3
+anthropic>=0.50.0
+dirtyjson==1.0.8
+json-repair>=0.30.0
