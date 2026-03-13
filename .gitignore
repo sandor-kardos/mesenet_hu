@@ -23,6 +23,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
 # --- MESENET ROBOT SHIELD ---
 # Python virtuális környezet (EZT TOROLD A 4000+ FAJL KÖZÜL)
 .venv/
@@ -32,6 +33,20 @@ venv/
 # SOHA ne kerüljenek fel GitHubra!
 .env
 scripts/importer/.env
+scripts/importer/prompt.txt
+
+# Prompt és debug fájlok
+*.prompt.txt
+claude_raw_debug.txt
+err_log.txt
+walkthrough.md
+tunnel.log
+
+# Gemini session junk
+scripts/importer/debug_*.py
+scripts/importer/list_*.py
+scripts/importer/test_*.py
+scripts/importer/get_*.py
 
 # Python maradékok
 __pycache__/

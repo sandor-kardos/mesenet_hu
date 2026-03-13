@@ -50,30 +50,16 @@ def build_image_prompt(scene, title):
         "Strong use of shadows, silhouettes, and soft moody lighting.\n"
         "RATIO: 3:4\n"
         "RESTRICTIONS: NO 3D, NO CGI, NO Pixar, NO Disney style, NO frame, "
-        "no glossy plastic textures, no text, no hyperrealism, no decorative frame."
+        "no glossy plastic textures, no hyperrealism, no decorative frame. "
+        "ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO TITLES anywhere on the image."
     )
 
 def generate_story(raw):
     print(f"[*] AI Narrative Synthesis ({CLAUDE_MODEL_NAME})...")
 
-    instruction = """## RULE #1 — NARRATIVE INTEGRITY (HIGHEST PRIORITY)
-Preserve all plot points, character names, titles, and story endings without exception.
-Modifications are strictly limited to Hungarian grammar and sophisticated stylistic polish.
-DO NOT summarize, skip, or remove ANY part of the story.
-
-## FORMATTING RULES
-- Output: VALID JSON OBJECT ONLY. No markdown fences, no extra text.
-- Content: Full story text wrapped in <p> tags.
-- Dialogue: Start every line with a character-specific emoji (Synchron-Súgó).
-
-## SEO LAYER (Hungarian)
-- seo_alt_text: Tűpontos magyar leírás a képhez (keresőoptimalizált).
-- seo_title: Kattintásmágnes magyar cím (max 60 karakter).
-- seo_description: Meggyőző meta leírás (max 155 karakter).
-
-Schema:
-{ "title": "", "content": "", "hero_image": "emoji", "reading_time": 5, "age_group": "4-6", "mood": "Kalandos", "scene_description": "", "seo_alt_text": "", "seo_title": "", "seo_description": "", "tags": [], "question_1": "", "question_2": "", "question_3": "" }
-"""
+    prompt_path = os.path.join(os.path.dirname(__file__), "prompt.txt")
+    with open(prompt_path, "r", encoding="utf-8") as f:
+        instruction = f.read()
 
     try:
         message = client_claude.messages.create(
