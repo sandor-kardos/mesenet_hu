@@ -1,16 +1,30 @@
-# React + Vite
+# Mesenet.hu - AI-Powered Story Generation Pipeline 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-performance Progressive Web App (PWA) built in a **24-hour sprint** to replace a traditional 12-week agency content pipeline. 
 
-Currently, two official plugins are available:
+Live Demo: [mesenet.hu](https://mesenet.hu) | Case Study: [sandorkardos.com](https://sandorkardos.com/projects/how-far-ai-gets-you-in-24-hours-the-mesenet-hu-pwa-case-study/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🏗 The Architecture
+The project solves a major bottleneck: high-quality, safe content generation at scale. I enforced a hard decoupling between the data layer and the presentation layer to prevent "AI logic drift."
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Backend (Python):** Scrapes raw data and orchestrates the AI pipeline.
+- **LLM Layer (Claude 4.6 Sonnet):** Rewrites stories using specific child psychology and pedagogical guidelines.
+- **Image Gen (Gemini 3 Flash):** Generates consistent 3:4 vertical illustrations for a mobile-first experience.
+- **Frontend (React + Vite):** A lightweight, PWA-enabled UI optimized for readability (Light/Dark/Sepia modes).
+- **Hosting:** Self-hosted on a Plesk VPS with a headless WordPress/MySQL backend.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
+* **Frontend:** React, Vite, Tailwind CSS, Workbox (PWA).
+* **Backend:** Python (BeautifulSoup, Requests).
+* **Database:** MySQL (Headless WP REST API).
+* **AI:** Claude 4.6 Sonnet, Gemini 3 Flash.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ⚡ Key Engineering Challenges Solved
+* **Decoupling:** Forced strict separation between Python data owner and React UI owner to maintain clean code during AI-assisted development.
+* **PWA Lifecycle:** Custom Workbox configuration to ensure offline reading capabilities and "Install to Home Screen" functionality.
+* **UX Optimization:** Implemented a non-intrusive interactive reader with custom rating systems and AI-generated follow-up questions for children.
+
+## 📈 The Result
+Reduced the cost of a full production pipeline from an estimated **£12,000+** to essentially zero operational cost (API usage only), with a 24-hour time-to-market.
