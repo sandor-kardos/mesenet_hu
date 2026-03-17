@@ -7,11 +7,11 @@ export default function FeedbackModal({ isOpen, onClose, storyTitle, storyId }) 
   if (!isOpen) return null;
 
   const categories = [
-    { id: 'missing', label: '🧩 Hiányos / Érthetetlen szöveg' },
-    { id: 'age', label: '🔞 Nem megfelelő korcsoport' },
-    { id: 'ai', label: '🤖 AI hiba (furcsa mondatok)' },
-    { id: 'image', label: '🖼️ A kép nem illik a meséhez' },
-    { id: 'boring', label: '💤 Nem volt érdekes' }
+    { id: 'missing', label: t('catIncomplete') },
+    { id: 'age', label: t('catAge') },
+    { id: 'ai', label: t('catAI') },
+    { id: 'image', label: t('catImage') },
+    { id: 'boring', label: t('catBoring') }
   ];
 
   const handleSubmit = async (reason) => {
@@ -54,14 +54,14 @@ export default function FeedbackModal({ isOpen, onClose, storyTitle, storyId }) 
         {isSuccess ? (
           <div className="fade-in" style={{ padding: '2em 0' }}>
             <div style={{ fontSize: '3rem', marginBottom: '15px' }}>✨</div>
-            <h3 style={{ color: '#ffd700' }}>Köszönjük!</h3>
-            <p style={{ color: 'rgba(255,255,255,0.7)' }}>A visszajelzésed sokat segít a Mesenet fejlődésében.</p>
+            <h3 style={{ color: '#ffd700' }}>{t('thankYou')}</h3>
+            <p style={{ color: 'rgba(255,255,255,0.7)' }}>{t('helpUs')}</p>
           </div>
         ) : (
           <>
-            <h3 style={{ color: '#ffd700', marginBottom: '10px' }}>Miben segíthetünk?</h3>
+            <h3 style={{ color: '#ffd700', marginBottom: '10px' }}>{t('feedbackTitle')}</h3>
             <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', marginBottom: '20px' }}>
-              Miért nem tetszett a(z) <strong style={{color: '#fff'}}>{storyTitle || 'történet'}</strong>?
+              {t('feedbackDesc', storyTitle || 'történet')}
             </p>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -90,7 +90,7 @@ export default function FeedbackModal({ isOpen, onClose, storyTitle, storyId }) 
             
             {isSending && (
               <div style={{ marginTop: '15px', color: '#ffd700', fontSize: '0.8rem' }}>
-                Küldés... 🚀
+                {t('sending')}
               </div>
             )}
           </>

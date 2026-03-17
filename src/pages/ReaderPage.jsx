@@ -4,11 +4,16 @@ import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
 import DrawingCanvas from '../components/DrawingCanvas';
-import FeedbackModal from '../components/FeedbackModal';
 import { useLanguage } from '../context/LanguageContext';
 
-
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
+const FEEDBACK_PRESETS = [
+    { emoji: '❤️', id: 'love' },
+    { emoji: '👍', id: 'like' },
+    { emoji: '😮', id: 'wow' },
+    { emoji: '😴', id: 'boring' },
+    { emoji: '👎', id: 'dislike' }
+];
 
 export default function ReaderPage() {
     const { id } = useParams();
@@ -16,96 +21,127 @@ export default function ReaderPage() {
     const { cycleTheme, themeIcon } = useTheme();
     const { updateProgress, markAsRead, rateStory, ratings, lastRead, saveDrawing, userDrawings } = useReading();
     const { stories, isLoading, error } = useStories();
-    const { t } = useLanguage();
+    const { t, toggleLanguage } = useLanguage();
 
-
-    const story = stories.find((s) => s.id === parseInt(id));
+    const story = stories.find((s) => String(s.id) === String(id));
     const contentRef = useRef(null);
     const hideTimeout = useRef(null);
     const fileInputRef = useRef(null);
+    const lastScrollTop = useRef(0);
 
-    const [scrollPercent, setScrollPercent] = useState(0);
+    const [fontSize, setFontSize] = useState(100);
     const [headerVisible, setHeaderVisible] = useState(true);
+    const [enlargedImage, setEnlargedImage] = useState(null); 
+    const [scrollPercent, setScrollPercent] = useState(0);
     const [discussionOpen, setDiscussionOpen] = useState(false);
     const [currentRating, setCurrentRating] = useState(ratings[id] || null);
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDrawingMode, setIsDrawingMode] = useState(false);
     
-    // Check if there's already a drawing for this story
-    const existingDrawing = userDrawings.find(d => d.storyId === parseInt(id));
+    const existingDrawing = userDrawings.find(d => String(d.storyId) === String(id));
     const [tempDrawing, setTempDrawing] = useState(existingDrawing?.dataUrl || null);
     const [workshopOpen, setWorkshopOpen] = useState(false);
-    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-    const [textSize, setTextSize] = useState(100);
+    const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-
-
-
-
-    // Restore scroll position
     useEffect(() => {
-        if (lastRead && lastRead.storyId === parseInt(id) && lastRead.scrollPercent > 0) {
+        if (ratings[id]) setCurrentRating(ratings[id]);
+    }, [id, ratings]);
+
+    useEffect(() => {
+        if (lastRead && String(lastRead.storyId) === String(id) && lastRead.scrollPercent > 0) {
             setTimeout(() => {
                 const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-                window.scrollTo({ top: (lastRead.scrollPercent / 100) * scrollHeight, behavior: 'smooth' });
-            }, 100);
+                if (scrollHeight > 0) {
+                    window.scrollTo({ top: (lastRead.scrollPercent / 100) * scrollHeight, behavior: 'smooth' });
+                }
+            }, 500);
         }
     }, [id, lastRead]);
 
-
-    // Track scroll
     const handleScroll = useCallback(() => {
         const scrollTop = window.scrollY;
         const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
         const percent = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
         setScrollPercent(Math.min(100, Math.round(percent)));
-        setHeaderVisible(false);
+        
+        if (scrollTop > lastScrollTop.current && scrollTop > 100) {
+            setHeaderVisible(false);
+        } else {
+            setHeaderVisible(true);
+        }
+        lastScrollTop.current = scrollTop;
+
         clearTimeout(hideTimeout.current);
-        hideTimeout.current = setTimeout(() => setHeaderVisible(true), 150);
+        if (scrollTop > 100) {
+            hideTimeout.current = setTimeout(() => setHeaderVisible(false), 3000);
+        }
     }, []);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => { window.removeEventListener('scroll', handleScroll); clearTimeout(hideTimeout.current); };
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            clearTimeout(hideTimeout.current);
+        };
     }, [handleScroll]);
 
-    // Save progress
     useEffect(() => {
-        const interval = setInterval(() => { if (scrollPercent > 0) updateProgress(parseInt(id), scrollPercent); }, 5000);
+        if (!contentRef.current) return;
+        const imgs = contentRef.current.querySelectorAll('img');
+        const handleImgDblClick = (e) => {
+            e.stopPropagation();
+            setEnlargedImage(e.target.src);
+        };
+        imgs.forEach(img => img.addEventListener('dblclick', handleImgDblClick));
+        return () => {
+            imgs.forEach(img => img.removeEventListener('dblclick', handleImgDblClick));
+        };
+    }, [story]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (scrollPercent > 0) updateProgress(id, scrollPercent);
+        }, 5000);
         return () => clearInterval(interval);
     }, [scrollPercent, id, updateProgress]);
 
-    // Mark as read
-    useEffect(() => { if (scrollPercent >= 95) markAsRead(parseInt(id)); }, [scrollPercent, id, markAsRead]);
+    useEffect(() => {
+        if (scrollPercent >= 95) markAsRead(id);
+    }, [scrollPercent, id, markAsRead]);
 
-
-    const handleContentClick = (e) => {
+    const handleContentClick = () => {
         setHeaderVisible(true);
         clearTimeout(hideTimeout.current);
-        hideTimeout.current = setTimeout(() => { if (window.scrollY > 100) setHeaderVisible(false); }, 3000);
-    };
-
-
-
-    const handleRate = (rating) => {
-        setCurrentRating(rating);
-        rateStory(parseInt(id), rating);
-        if (rating === 'down') {
-            setIsFeedbackModalOpen(true);
+        if (window.scrollY > 100) {
+            hideTimeout.current = setTimeout(() => setHeaderVisible(false), 3000);
         }
     };
 
+    const handleRate = (ratingId) => {
+        setCurrentRating(ratingId);
+        rateStory(id, ratingId);
+        setFeedbackSubmitted(true);
+        // Simple log or notify logic could go here
+        console.log('[Feedback] Native reaction:', ratingId);
+    };
 
     const getNextStory = () => {
-        const idx = stories.findIndex((s) => s.id === parseInt(id));
+        const idx = stories.findIndex((s) => String(s.id) === String(id));
         return stories[(idx + 1) % stories.length];
     };
 
     const handleShare = async (e) => {
         e.stopPropagation();
         if (navigator.share) {
-            try { await navigator.share({ title: story.title, text: 'A Mesenet appban olvasom!', url: window.location.href }); }
-            catch (err) { console.log('Share failed', err); }
+            try {
+                await navigator.share({
+                    title: story.title,
+                    text: 'A Mesenet appban olvasom!',
+                    url: window.location.href
+                });
+            } catch (err) {
+                console.log('Share failed', err);
+            }
         } else {
             alert('A megosztás nem támogatott ezen az eszközön.');
         }
@@ -122,143 +158,117 @@ export default function ReaderPage() {
     const handleSaveDrawing = (dataUrl) => {
         setTempDrawing(dataUrl);
         setIsDrawingMode(false);
-        saveDrawing(parseInt(id), dataUrl);
+        saveDrawing(id, dataUrl);
         setUploadedFile({ name: 'Saját rajz.png' });
     };
 
+    const cleanContent = (html) => {
+        if (!html) return '';
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(`<div>${html}</div>`, 'text/html');
+        const root = doc.body.firstChild;
+        let markerFound = false;
+        const classesToStrip = [
+            'mese-feedback-section', 'mese-accessibility-controls', 'mese-questions-accordion', 
+            'mese-alkotomuhely-accordion', 'mese-next-story-section', 'rating-card', 
+            'discussion-card', 'zoom-controls', 'rating-question', 'rating-buttons', 
+            'discussion-toggle', 'discussion-body', 'share-section', 'social-share', 
+            'next-story-btn', 'text-size-bar'
+        ];
+        const nodes = Array.from(root.childNodes);
+        for (const node of nodes) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                const text = node.textContent;
+                if (node.classList.contains('end-marker') || text.includes('~ Vége ~') || text.includes('~ The End ~')) {
+                    markerFound = true;
+                    continue;
+                }
+                if (!markerFound) {
+                    const hasClass = classesToStrip.some(cls => node.classList.contains(cls) || node.querySelector(`.${cls}`));
+                    const isShareBtn = node.tagName === 'BUTTON' && (text.includes('Megosztás') || text.includes('Share'));
+                    const hasShareBtn = node.querySelector('button') && (node.querySelector('button').textContent.includes('Megosztás') || node.querySelector('button').textContent.includes('Share'));
+                    if (hasClass || isShareBtn || hasShareBtn) node.remove();
+                } else {
+                    const hasClass = classesToStrip.some(cls => node.classList.contains(cls) || node.querySelector(`.${cls}`));
+                    if (hasClass) node.remove();
+                }
+            } else if (node.nodeType === Node.TEXT_NODE) {
+                if (node.textContent.includes('~ Vége ~') || node.textContent.includes('~ The End ~')) markerFound = true;
+            }
+        }
+        let result = root.innerHTML;
+        if (markerFound) {
+            const markerPos = result.search(/~ Vége ~|~ The End ~|<div class=["']end-marker/);
+            if (markerPos !== -1) {
+                const prefix = result.substring(0, markerPos);
+                const suffix = result.substring(markerPos);
+                result = prefix.replace(/~ Vége ~/g, '').replace(/~ The End ~/g, '') + suffix;
+            }
+        }
+        return result.trim();
+    };
 
     if (isLoading) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⏳ {t('loading')}</div>;
     if (error) return <div className="reader-shell fade-in" style={{ textAlign: 'center', paddingTop: 100 }}>⚠️ {t('error')}: {error}</div>;
-    if (!story) return (
-        <div className="reader-shell">
-            <div className="placeholder-page">
-                <div className="placeholder-emoji">📖</div>
-                <div className="placeholder-title">{t('storyNotFound')}</div>
-                <button className="next-story-btn" onClick={() => navigate('/')}>← {t('backToHome')}</button>
-            </div>
-        </div>
-    );
+    if (!story) return <div className="reader-shell"><div className="placeholder-page"><div className="placeholder-emoji">📖</div><div className="placeholder-title">{t('storyNotFound')}</div><button className="next-story-btn" onClick={() => navigate('/')}>← {t('backToHome')}</button></div></div>;
 
     const nextStory = getNextStory();
-    const heroImg = story.featuredImage;
-
-    // Helper to strip redundant UI blocks that might be hardcoded in the content
-    const cleanContent = (html) => {
-        if (!html) return '';
-        // Remove known redundant blocks with a more aggressive approach
-        const blocksToRemove = [
-            /<div class=["']zoom-controls["']>.*?<\/div>/gs,
-            /<div class=["']end-marker["']>.*?<\/div>/gs,
-            /<div class=["']rating-card["']>.*?<\/div>/gs,
-            /<div class=["']rating-question["']>.*?<\/div>/gs,
-            /<div class=["']rating-buttons["']>.*?<\/div>/gs,
-            /<div class=["']discussion-section["']>.*?<\/div>/gs,
-            /<div class=["']share-section["']>.*?<\/div>/gs,
-            /<div class=["']discussion-card["']>.*?<\/div>/gs,
-            /<div class=["']discussion-toggle["']>.*?<\/div>/gs,
-            /<div class=["']discussion-body["']>.*?<\/div>/gs,
-            /<button class=["']next-story-btn["']>.*?<\/button>/gs,
-            /<div class=["']mese-accessibility-controls["']>.*?<\/div>/gs,
-            /<div class=["']text-size-bar["']>.*?<\/div>/gs,
-            /<p>~ Vége ~<\/p>/g,
-            /~ Vége ~/g
-        ];
-        let cleaned = html;
-        blocksToRemove.forEach(regex => {
-            cleaned = cleaned.replace(regex, '');
-        });
-        
-        // Final trim to remove any trailing whitespace or empty tags left behind
-        return cleaned.trim();
-    };
-
     const contentHtml = cleanContent(story.content.includes('<p>') ? story.content : story.content.split('\n\n').map(p => `<p>${p}</p>`).join(''));
 
     return (
-        <div className="reader-shell" onClick={handleContentClick}>
-
-
-
-            {/* Reader Header */}
+        <div className="reader-shell" onClick={handleContentClick} style={{ maxWidth: '480px', margin: '0 auto', position: 'relative' }}>
+            {/* Stable 3-Column Header */}
             <div className={`reader-header ${headerVisible ? '' : 'hidden'}`}>
-                <button className="reader-back-btn" onClick={(e) => { e.stopPropagation(); navigate('/'); }}>← {t('back')}</button>
-                <div className="reader-title">{story.title}</div>
-                <button className="icon-btn" onClick={(e) => { e.stopPropagation(); cycleTheme(); }} aria-label={t('themeToggle')}>{themeIcon}</button>
+                <div className="header-col-left">
+                    <button className="reader-back-btn" onClick={(e) => { e.stopPropagation(); navigate('/'); }}>← {t('back')}</button>
+                </div>
+                <div className="header-col-center">
+                    <div className="reader-title">{story.title}</div>
+                </div>
+                <div className="header-col-right">
+                    <div className="reader-actions-group">
+                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); setFontSize(p => p >= 150 ? 100 : p + 25); }}>
+                            🔍<span className="tiny-percent">{fontSize}%</span>
+                        </button>
+                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}>🪄</button>
+                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); cycleTheme(); }}>{themeIcon}</button>
+                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); navigate('/profile'); }}>👤</button>
+                    </div>
+                </div>
             </div>
 
-            {/* Content */}
             <div className="reader-content" ref={contentRef}>
+                <div className="reader-cover" onDoubleClick={(e) => { e.stopPropagation(); if (story.featuredImage) setEnlargedImage(story.featuredImage); }}>
+                    {story.featuredImage ? <img src={story.featuredImage} alt={story.title} className="story-image-mock" /> : <div className="story-cover-emoji">{story.coverEmoji}</div>}
+                </div>
 
-                {/* Hero Image */}
-                {heroImg && (
-                    <div className="story-image-container fade-in">
-                        <div className="story-image-mock" style={{ padding: 0, overflow: 'hidden', background: 'transparent', border: 'none', position: 'relative' }}>
-                            <img
-                                src={heroImg}
-                                alt={story.title}
-                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                        </div>
-                    </div>
-                )}
-                {!heroImg && story.heroImage && (
-                    <div className="story-image-container fade-in">
-                        <div className="story-image-mock">{story.heroImage}</div>
-                    </div>
-                )}
-
-                {/* Story text */}
-                <div 
-                    className="mese-body-wrapper"
-                    style={{ fontSize: `${textSize}%`, transition: 'font-size 0.3s ease', position: 'relative' }}
-                    ref={contentRef}
-                >
+                <div className="mese-body-wrapper" style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
                     <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
                 </div>
 
-
-
-                {/* End Block Container */}
                 <div className="end-block">
                     <div className="end-marker">{t('end')}</div>
 
-                    {/* Native Text Size Controls (Moved here) */}
-                    <div className="mese-accessibility-controls" style={{
-                        margin: '1.5em 0', display: 'flex', alignItems: 'center', gap: '12px',
-                        padding: '12px 16px', background: 'rgba(255,255,255,0.03)',
-                        border: '1px solid var(--border)', borderRadius: '12px', justifyContent: 'center'
-                    }}>
-                        <span style={{ fontSize: '1.2em', opacity: 0.7 }}>🔍</span>
-                        {[100, 125, 150].map(size => (
-                            <button 
-                                key={size}
-                                className={`text-size-btn ${textSize === size ? 'active' : ''}`}
-                                onClick={() => setTextSize(size)}
-                                style={{
-                                    background: textSize === size ? 'rgba(255,215,0,0.1)' : 'rgba(255,255,255,0.05)',
-                                    border: '1px solid ' + (textSize === size ? '#ffd700' : 'rgba(255,255,255,0.1)'),
-                                    color: textSize === size ? '#ffd700' : 'inherit',
-                                    padding: '4px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85em'
-                                }}
-                            >
-                                {size}%
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* 1. Feedback UI (Tetszett a mese?) */}
+                    {/* 5 Quick Reaction Presets */}
                     <div className="rating-card">
-                        <div className="rating-question">{t('didYouLike')}</div>
-                        <div className="rating-buttons">
-                            <button className={`rate-btn ${currentRating === 'up' ? 'selected-up' : ''}`} onClick={(e) => { e.stopPropagation(); handleRate('up'); }} id="rate-up">👍</button>
-                            <button className={`rate-btn ${currentRating === 'down' ? 'selected-down' : ''}`} onClick={(e) => { e.stopPropagation(); handleRate('down'); }} id="rate-down">👎</button>
+                        <div className="rating-question">{feedbackSubmitted ? t('thankYou') : t('didYouLike')}</div>
+                        <div className="reaction-presets">
+                            {FEEDBACK_PRESETS.map(preset => (
+                                <button 
+                                    key={preset.id}
+                                    className={`reaction-btn ${currentRating === preset.id ? 'active' : ''}`}
+                                    onClick={(e) => { e.stopPropagation(); handleRate(preset.id); }}
+                                    title={preset.id}
+                                >
+                                    {preset.emoji}
+                                </button>
+                            ))}
                         </div>
                     </div>
 
-                    {/* 2. Questions Accordion (Miről beszélgessünk?) */}
                     {story.discussionQuestions && story.discussionQuestions.length > 0 && (
                         <div className="discussion-card">
-                            <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }} id="discussion-toggle">
+                            <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
                                 <span>💬 {t('letsTalk')}</span>
                                 <span className={`discussion-arrow ${discussionOpen ? 'open' : ''}`}>▼</span>
                             </button>
@@ -273,55 +283,34 @@ export default function ReaderPage() {
                         </div>
                     )}
 
-                    {/* 3. Share Section (Megosztás) */}
                     <div className="share-section" style={{ marginBottom: '20px' }}>
-                        <button className="next-story-btn" onClick={handleShare}
-                            style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
+                        <button className="next-story-btn" onClick={handleShare} style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
                             📤 {t('share')}
                         </button>
                     </div>
 
-                    {/* 4. Alkotóműhely Accordion (Rajzolok egyet) - STYLED DARK & YELLOW */}
-                    <div className="discussion-card" style={{ 
-                        background: 'linear-gradient(135deg,#1a1a2e 0%,#16213e 100%)', 
-                        border: '1.5px solid rgba(255,200,100,0.3)' 
-                    }}>
-                        <button className="discussion-toggle" 
-                            onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }} 
-                            style={{ color: '#ffd700' }}
-                        >
+                    <div className="discussion-card workshop-card">
+                        <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }} style={{ color: '#ffd700' }}>
                             <span>🎨 {t('illDraw')}</span>
                             <span className={`discussion-arrow ${workshopOpen ? 'open' : ''}`} style={{ color: '#ffd700' }}>▼</span>
                         </button>
-                        
                         <div className={`accordion-body ${workshopOpen ? 'open' : ''}`} style={{ textAlign: 'center' }}>
                             {!isDrawingMode ? (
                                 <div style={{ padding: '10px 0 20px' }}>
                                     <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎨</div>
-                                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
-                                        {t('drawPrompt')}
-                                    </p>
+                                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>{t('drawPrompt')}</p>
                                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                        <button className="mese-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}
-                                            style={{ background: 'linear-gradient(135deg,#ffd700,#ffaa00)', color: '#1a1a2e', border: 'none', padding: '10px 20px', borderRadius: '50px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(255,200,0,0.3)' }}>
-                                            ✏️ {t('drawButton')}
-                                        </button>
-                                        <button className="mese-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
-                                            style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.2)', padding: '10px 20px', borderRadius: '50px', fontWeight: 600, cursor: 'pointer' }}>
-                                            📸 {t('uploadButton')}
-                                        </button>
+                                        <button className="mese-btn drawing-main-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}>✏️ {t('drawButton')}</button>
+                                        <button className="mese-btn upload-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>📸 {t('uploadButton')}</button>
                                     </div>
                                     <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
-                                    
                                     {tempDrawing && (
                                         <div style={{ marginTop: '1.5rem', position: 'relative', display: 'inline-block' }}>
-                                            <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700' }} />
+                                            <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700', cursor: 'pointer' }} onClick={() => setEnlargedImage(tempDrawing)} />
                                             <div style={{ position: 'absolute', top: -8, right: -8, background: '#ffd700', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#1a1a2e' }}>✨</div>
                                         </div>
                                     )}
-                                    {uploadedFile && (
-                                        <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — {t('saved')}</p>
-                                    )}
+                                    {uploadedFile && <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — {t('saved')}</p>}
                                 </div>
                             ) : (
                                 <div style={{ padding: '20px 0' }}>
@@ -331,32 +320,25 @@ export default function ReaderPage() {
                         </div>
                     </div>
 
-                    {/* 5. Next story Button */}
-                    <button className="next-story-btn" id="next-story-btn"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
+                    <button className="next-story-btn" onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
                         → {t('nextStory')}
                     </button>
                 </div>
-
             </div>
 
-            {/* Progress bar */}
+            {enlargedImage && (
+                <div className="lightbox-overlay" onDoubleClick={() => setEnlargedImage(null)} onClick={() => setEnlargedImage(null)}>
+                    <img src={enlargedImage} alt="Enlarged" className="lightbox-image" />
+                    <div className="lightbox-close">✕</div>
+                </div>
+            )}
+
             <div className="reader-progress">
                 <div className="reader-progress-bar">
                     <div className="reader-progress-fill" style={{ width: `${scrollPercent}%` }} />
                 </div>
                 <div className="reader-progress-text">{scrollPercent}%</div>
             </div>
-
-            <FeedbackModal 
-                isOpen={isFeedbackModalOpen} 
-                onClose={() => setIsFeedbackModalOpen(false)} 
-                storyTitle={story.title}
-                storyId={id}
-            />
-
-            <style>{`@keyframes meseFadeIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}`}</style>
         </div>
-
     );
 }

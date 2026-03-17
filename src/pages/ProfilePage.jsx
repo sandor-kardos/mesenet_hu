@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
+import { useLanguage } from '../context/LanguageContext';
 
 
 export default function ProfilePage() {
   const { theme, cycleTheme, themeIcon } = useTheme();
   const { userDrawings, deleteDrawing } = useReading();
   const { stories } = useStories();
+  const { t } = useLanguage();
   const [activeModal, setActiveModal] = useState(null); // 'aszf' | 'privacy' | null
 
 
@@ -15,22 +17,22 @@ export default function ProfilePage() {
     <div className="page-content fade-in">
       <div className="profile-header">
         <div className="avatar">👤</div>
-        <h1>Profil</h1>
-        <p className="subtitle">Meseolvasó</p>
+        <h1>{t('profile')}</h1>
+        <p className="subtitle">{t('readerSubtitle')}</p>
       </div>
 
       <div className="settings-section">
-        <h2>Beállítások</h2>
+        <h2>{t('settings')}</h2>
         
         <div className="setting-item">
           <div className="setting-info">
-            <h3>Téma</h3>
-            <p>Válassz a három színvilág közül</p>
+            <h3>{t('theme')}</h3>
+            <p>{t('themeDesc')}</p>
           </div>
           <button 
             className="icon-btn" 
             onClick={cycleTheme}
-            aria-label="Téma váltása"
+            aria-label={t('themeToggle')}
             style={{ width: '48px', height: '48px', fontSize: '1.5rem' }}
           >
             {themeIcon}
@@ -39,8 +41,8 @@ export default function ProfilePage() {
 
         <div className="setting-item">
           <div className="setting-info">
-            <h3>Értesítések</h3>
-            <p>Emlékeztető az esti meséléshez</p>
+            <h3>{t('notifications')}</h3>
+            <p>{t('notificationsDesc')}</p>
           </div>
           <label className="toggle-switch">
             <input type="checkbox" />
@@ -51,17 +53,17 @@ export default function ProfilePage() {
 
       <div className="premium-section">
         <div className="premium-card">
-          <h2>🌟 Mesenet Premium</h2>
-          <p>Korlátlan hozzáférés több ezer meséhez, saját hangon felolvasó AI mód, és offline működés.</p>
-          <button className="btn btn-primary">Próbáld ki ingyen</button>
+          <h2>{t('premiumTitle')}</h2>
+          <p>{t('premiumDesc')}</p>
+          <button className="btn btn-primary">{t('premiumCTA')}</button>
         </div>
       </div>
 
       {/* Saját Galéria Section */}
       <div className="gallery-section" style={{ padding: '0 20px 30px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ margin: 0, fontSize: '1.4rem' }}>🎨 Saját Galéria</h2>
-          <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>{userDrawings.length} alkotás</span>
+          <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{t('galleryTitle')}</h2>
+          <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>{t('creationsCount', userDrawings.length)}</span>
         </div>
         
         {userDrawings.length === 0 ? (
@@ -73,8 +75,8 @@ export default function ProfilePage() {
             border: '1px dashed rgba(255,255,255,0.1)'
           }}>
             <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🖼️</div>
-            <p className="theme-aware-muted" style={{ margin: 0, fontWeight: 500 }}>Még nincsenek mentett rajzaid.</p>
-            <p className="theme-aware-muted" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '5px' }}>Olvasd el a kedvenc meséd, és készíts hozzá egy rajzot!</p>
+            <p className="theme-aware-muted" style={{ margin: 0, fontWeight: 500 }}>{t('noDrawings')}</p>
+            <p className="theme-aware-muted" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '5px' }}>{t('drawFirst')}</p>
 
 
           </div>
@@ -114,7 +116,7 @@ export default function ProfilePage() {
                     {story?.title || 'Mese rajz'}
                   </div>
                   <button 
-                    onClick={() => { if(confirm('Biztosan törlöd ezt a rajzot?')) deleteDrawing(drawing.id); }}
+                    onClick={() => { if(confirm(t('deleteConfirm'))) deleteDrawing(drawing.id); }}
                     style={{
                       position: 'absolute',
                       top: '5px', right: '5px',
@@ -132,7 +134,7 @@ export default function ProfilePage() {
                   >
                     ×
                   </button>
-                </div>
+</div>
               );
             })}
           </div>
@@ -147,14 +149,14 @@ export default function ProfilePage() {
           rel="noopener noreferrer"
           style={{ display: 'inline-block', padding: '12px 24px', background: '#FF5E5B', color: 'white', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 12px rgba(255, 94, 91, 0.3)' }}
         >
-          ☕ Hívj meg egy kávéra a Ko-fi-n!
+          {t('coffee')}
         </a>
       </div>
 
       <div className="footer-links">
-        <button onClick={() => setActiveModal('aszf')} className="text-btn">ÁSZF</button>
-        <button onClick={() => setActiveModal('privacy')} className="text-btn">Adatvédelem</button>
-        <a href="mailto:hello@mesenet.hu">Kapcsolat</a>
+        <button onClick={() => setActiveModal('aszf')} className="text-btn">{t('aszf')}</button>
+        <button onClick={() => setActiveModal('privacy')} className="text-btn">{t('privacy')}</button>
+        <a href="mailto:hello@mesenet.hu">{t('contact')}</a>
       </div>
 
       {/* Modals */}

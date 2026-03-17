@@ -1,29 +1,31 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStories } from '../context/StoryContext';
-
-const MORAL_WEIGHTS = [
-    { value: 1, emoji: '😴', label: 'Könnyed' },
-    { value: 2, emoji: '🤔', label: 'Kalandos' },
-    { value: 3, emoji: '📚', label: 'Komoly' },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 const AGE_GROUPS = ['0-3', '4-6', '7+'];
 
 export default function MoralWeightFilter({ onFilterChange }) {
     const { stories } = useStories();
+    const { t } = useLanguage();
     const [activeWeight, setActiveWeight] = useState(null);
     const [activeAges, setActiveAges] = useState([]);
     const [activeTags, setActiveTags] = useState([]);
-    const navigate = useNavigate();
 
     const ALL_TAGS = [...new Set(stories.flatMap((s) => s.tags || []))];
+
+    const MORAL_WEIGHTS = [
+        { value: 1, emoji: '😴', label: t('moralLight') },
+        { value: 2, emoji: '🤔', label: t('moralAdventure') },
+        { value: 3, emoji: '📚', label: t('moralSerious') },
+    ];
 
     const toggleAge = (age) => {
         setActiveAges((prev) =>
             prev.includes(age) ? prev.filter((a) => a !== age) : [...prev, age]
         );
     };
+
 
     const toggleTag = (tag) => {
         setActiveTags((prev) =>
@@ -33,7 +35,7 @@ export default function MoralWeightFilter({ onFilterChange }) {
 
     const getFilteredStories = () => {
         return stories.filter((s) => {
-            if (activeWeight && s.moralWeight !== activeWeight) return false;
+            if (activeWeight && parseInt(s.moralWeight) !== activeWeight) return false;
             if (activeAges.length > 0 && !activeAges.includes(s.ageGroup)) return false;
             if (activeTags.length > 0 && !activeTags.some((t) => s.tags.includes(t))) return false;
             return true;
@@ -55,7 +57,7 @@ export default function MoralWeightFilter({ onFilterChange }) {
 
     return (
         <div className="fade-in">
-            <div className="moral-question">Milyen estét szeretnétek?</div>
+            <div className="moral-question">{t('moralQuestion')}</div>
 
             <div className="moral-cards">
                 {MORAL_WEIGHTS.map((mw) => (
@@ -72,7 +74,7 @@ export default function MoralWeightFilter({ onFilterChange }) {
             </div>
 
             <div className="filter-row age-filter-row">
-                <span className="filter-label">Kor:</span>
+                <span className="filter-label">{t('ageLabel')}</span>
                 <div className="age-buttons-container">
                     {AGE_GROUPS.map((age) => (
                         <button
@@ -87,7 +89,7 @@ export default function MoralWeightFilter({ onFilterChange }) {
             </div>
 
             <div className="tags-filter-row">
-                <span className="filter-label">Címkék:</span>
+                <span className="filter-label">{t('tagsLabel')}</span>
                 <div className="tags-scroll-container">
                     {ALL_TAGS.map((tag) => (
                         <button

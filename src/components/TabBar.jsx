@@ -18,15 +18,11 @@ export default function TabBar() {
     return (
         <nav className="tab-bar" id="tab-bar">
             {tabs.map((tab) => {
-                const isActive = tab.to === '/'
-                    ? location.pathname === '/'
-                    : location.pathname.startsWith(tab.to);
-
                 return (
                     <NavLink
                         key={tab.to}
                         to={tab.to}
-                        className={`tab-item ${isActive ? 'active' : ''}`}
+                        className={({ isActive }) => `tab-item ${isActive ? 'active' : ''}`}
                         id={`tab-${tab.label.toLowerCase()}`}
                     >
                         <span className="tab-icon">{tab.icon}</span>

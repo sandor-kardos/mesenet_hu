@@ -167,13 +167,13 @@ export default function DrawingCanvas({ onSave, onCancel }) {
                         ))}
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button onClick={undo} style={controlBtnStyle} title="Visszavonás">↩️</button>
-                        <button onClick={clearCanvas} style={controlBtnStyle} title="Törlés">🗑️</button>
+                        <button onClick={undo} style={controlBtnStyle} title={t('undo')}>↩️</button>
+                        <button onClick={clearCanvas} style={controlBtnStyle} title={t('clear')}>🗑️</button>
                     </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Méret:</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>{t('brushSize')}</span>
                     <input
                         type="range"
                         min="1"
@@ -185,8 +185,8 @@ export default function DrawingCanvas({ onSave, onCancel }) {
                 </div>
 
                 <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                    <button onClick={onCancel} style={{ ...actionBtnStyle, background: 'rgba(255,255,255,0.05)', color: 'white' }}>Mégse</button>
-                    <button onClick={handleSave} style={{ ...actionBtnStyle, background: 'linear-gradient(135deg,#ffd700,#ffaa00)', color: '#1a1a2e' }}>Kész vagyok! ✨</button>
+                    <button onClick={onCancel} style={{ ...actionBtnStyle, background: 'rgba(255,255,255,0.05)', color: 'white' }}>{t('cancel')}</button>
+                    <button onClick={handleSave} style={{ ...actionBtnStyle, background: 'linear-gradient(135deg,#ffd700,#ffaa00)', color: '#1a1a2e' }}>{t('done')}</button>
                 </div>
             </div>
         </div>

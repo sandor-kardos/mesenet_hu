@@ -47,8 +47,10 @@ export default function HomePage() {
                 <StoryList title={t('tonightsStories')} stories={filteredStories.slice(0, 5)} hideSeeAll={true} />
             ) : (
                 <>
-                    <StoryCarousel title={t('recommendedForYou')} stories={recommended} />
-                    <StoryCarousel title={t('newStories')} stories={fresh} isSmall={true} />
+                    {recommended.length > 0 && (
+                        <StoryCarousel title={t('recommended')} stories={recommended} />
+                    )}
+                    <StoryCarousel title={t('fresh')} stories={fresh} isSmall={true} />
                 </>
             )}
 

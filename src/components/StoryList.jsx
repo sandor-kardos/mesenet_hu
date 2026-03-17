@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 const WEIGHT_ICONS = { 1: '😴', 2: '🤔', 3: '📚' };
 
 export default function StoryList({ title, stories, hideSeeAll = false }) {
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     return (
         <div className="section fade-in">
@@ -35,7 +37,7 @@ export default function StoryList({ title, stories, hideSeeAll = false }) {
             </div>
             {!hideSeeAll && (
                 <button className="see-all-btn" onClick={() => navigate('/discover')}>
-                    Összes mese →
+                    {t('seeAll')}
                 </button>
             )}
         </div>
