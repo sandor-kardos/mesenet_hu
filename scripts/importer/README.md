@@ -16,6 +16,8 @@ A Python automation script that streamlines content ingestion for the `mesenet.h
     ```bash
     cd scripts/importer
     ```
+    1b. USE mese [LINK] to import a story
+
 2.  Install dependencies:
     ```bash
     pip install -r requirements.txt
