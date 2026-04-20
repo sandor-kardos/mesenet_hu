@@ -40,18 +40,14 @@ def check_duplicate(slug):
         print(f"[!] Duplicate Alert: '{slug}' already exists."); sys.exit(0)
 
 def build_image_prompt(scene, title):
-    return (
-        "A classic European folk-tale children's book illustration. "
-        f"SCENE: {scene if scene else title} "
-        "STYLE & MOOD: 2D flat vector art mixed with subtle watercolor textures. "
-        "Minimalist and atmospheric. Vintage storybook aesthetic. "
-        "Muted, rich color palette suitable for dark mode and bedtime reading. "
-        "Strong use of shadows, silhouettes, and soft moody lighting.\n"
-        "RATIO: 3:4\n"
-        "RESTRICTIONS: NO 3D, NO CGI, NO Pixar, NO Disney style, NO frame, "
-        "no glossy plastic textures, no hyperrealism, no decorative frame. "
-        "ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO TITLES anywhere on the image."
-    )
+    prompt_path = os.path.join(os.path.dirname(__file__), "image_prompt.txt")
+    try:
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            base_prompt = f.read()
+    except FileNotFoundError:
+        base_prompt = "A vintage fairy-tale illustration. SCENE: {scene}"
+        
+    return base_prompt.replace("{scene}", scene if scene else title)
 
 def generate_story(raw):
     print(f"[*] AI Narrative Synthesis ({CLAUDE_MODEL_NAME})...")

@@ -1,0 +1,9 @@
+# Mesenet Story Engine — Image Prompt Configuration
+# -----------------------------------------------
+# Copy this file to `image_prompt.txt` to run the importer smoothly.
+# Built by Sándor Kardos — Creative Technologist & AI Product Designer
+# -----------------------------------------------
+A classic children's book illustration.
+SCENE: {scene}
+STYLE & MOOD: Vibrant, engaging, fairy-tale aesthetic.
+RESTRICTIONS: NO TEXT, NO WORDS, NO LETTERS, no titles anywhere on the image.

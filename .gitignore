@@ -34,6 +34,7 @@ venv/
 .env
 scripts/importer/.env
 scripts/importer/prompt.txt
+scripts/importer/image_prompt.txt
 
 # Prompt és debug fájlok
 *.prompt.txt
