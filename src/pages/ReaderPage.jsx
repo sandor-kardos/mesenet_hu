@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Heart, Pin, ThumbsDown, MessageCircle, Palette, Share2, ArrowRight } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
@@ -137,7 +138,7 @@ export default function ReaderPage() {
             toggleFavorite(id);
             // Trigger Magic Effect!
             setMagicBurst(true);
-            setTimeout(() => setMagicBurst(false), 2500);
+            setTimeout(() => setMagicBurst(false), 2200);
         } else if (ratingId !== 'love' && isFavorited) {
             // Remove from favorites if they downgrade their rating
             toggleFavorite(id);
@@ -273,7 +274,7 @@ export default function ReaderPage() {
                         <img 
                             src={story.featuredImage} 
                             alt={story.title} 
-                            className={`story-image-mock ${favorites.includes(String(id)) || favorites.includes(Number(id)) ? 'favorited-image-glow' : ''}`} 
+                            className="story-image-mock" 
                         />
                     ) : (
                         <div className="story-cover-emoji">{story.coverEmoji}</div>
@@ -288,44 +289,81 @@ export default function ReaderPage() {
                     <div className="end-marker">{t('end')}</div>
 
                     {/* 5 Quick Reaction Presets */}
-                    <div className="rating-card">
-                        <div className="rating-question">{feedbackSubmitted ? t('thankYou') : t('didYouLike')}</div>
-                        <div className="reaction-presets" style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
-                            {FEEDBACK_PRESETS.map(preset => (
-                                <div key={preset.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                                    <button 
-                                        className={`reaction-btn ${currentRating === preset.id ? 'active' : ''}`}
-                                        onClick={(e) => { e.stopPropagation(); handleRate(preset.id); }}
-                                        title={preset.label}
-                                    >
-                                        {preset.emoji}
-                                    </button>
-                                    {preset.id === 'love' && (
-                                        <div className="like-counter" style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent)', animation: currentRating === 'love' ? 'popIn 0.3s' : 'none' }}>
-                                            {fakeLikes + (currentRating === 'love' ? 1 : 0)}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                    <div className="reader-action-card glass-blur">
+                        <div className="action-row">
+                            <button 
+                                className={`action-btn ${currentRating === 'love' ? 'active-like' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); handleRate('love'); }}
+                                title={t('Tetszett')}
+                            >
+                                <Heart size={28} fill={currentRating === 'love' ? 'currentColor' : 'none'} className={currentRating === 'love' ? 'animate-jump-3' : 'hover-wiggle'} />
+                                <span className={`action-count-badge ${currentRating === 'love' ? 'active-badge' : ''}`}>
+                                    {fakeLikes + (currentRating === 'love' ? 1 : 0)}
+                                </span>
+                            </button>
+                            
+                            <button 
+                                className={`action-btn ${currentRating === 'neutral' ? 'active-pin' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); handleRate('neutral'); }}
+                                title={t('Mentés')}
+                            >
+                                <Pin size={24} fill={currentRating === 'neutral' ? 'currentColor' : 'none'} className={currentRating === 'neutral' ? '' : 'hover-wiggle'} />
+                            </button>
+
+                            <button 
+                                className={`action-btn ${currentRating === 'dislike' ? 'active-dislike' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); handleRate('dislike'); }}
+                                title={t('Nem')}
+                            >
+                                <ThumbsDown size={24} fill={currentRating === 'dislike' ? 'currentColor' : 'none'} className={currentRating === 'dislike' ? '' : 'hover-wiggle'} />
+                            </button>
+
+                            <button 
+                                className="action-btn"
+                                onClick={handleShare}
+                                title={t('Megosztás')}
+                            >
+                                <Share2 size={24} className="hover-wiggle" />
+                            </button>
                         </div>
+
                         {showDislikeReasons && (
-                            <div className="dislike-reasons" style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '0 0 8px 0' }}>Mi volt a probléma?</p>
-                                <button className="mese-btn" onClick={() => handleDislikeReason('rossz_szoveg')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>📝 Rossz szöveg</button>
-                                <button className="mese-btn" onClick={() => handleDislikeReason('szetesett_tartalom')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>🧩 Szétesett tartalom</button>
-                                <button className="mese-btn" onClick={() => handleDislikeReason('nem_tetszett_tortenet')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>🥱 Nem tetszett a történet</button>
-                                <button className="mese-btn" onClick={() => handleDislikeReason('egyeb')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>➕ Egyéb ok</button>
+                            <div className="feedback-grid animate-slide-down">
+                                <button className="feedback-btn" onClick={() => handleDislikeReason('rossz_szoveg')}>
+                                    <span style={{ fontSize: '1.2rem' }}>📝</span>
+                                    <span>Rossz szöveg</span>
+                                </button>
+                                <button className="feedback-btn" onClick={() => handleDislikeReason('szetesett_tartalom')}>
+                                    <span style={{ fontSize: '1.2rem' }}>🧩</span>
+                                    <span>Szétesett tartalom</span>
+                                </button>
+                                <button className="feedback-btn" onClick={() => handleDislikeReason('nem_tetszett_tortenet')}>
+                                    <span style={{ fontSize: '1.2rem' }}>🥱</span>
+                                    <span>Nem tetszett</span>
+                                </button>
+                                <button className="feedback-btn" onClick={() => handleDislikeReason('egyeb')}>
+                                    <span style={{ fontSize: '1.2rem' }}>➕</span>
+                                    <span>Egyéb ok</span>
+                                </button>
                             </div>
                         )}
                     </div>
 
-                    {story.discussionQuestions && story.discussionQuestions.length > 0 && (
-                        <div className="discussion-card">
-                            <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
-                                <span>💬 {t('letsTalk')}</span>
-                                <span className={`discussion-arrow ${discussionOpen ? 'open' : ''}`}>▼</span>
-                            </button>
-                            <div className={`discussion-body ${discussionOpen ? 'open' : ''}`}>
+                    <div className="secondary-tools-row">
+                        <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
+                            <MessageCircle size={18} className="tool-icon-ask" />
+                            <span>Kérdezz</span>
+                        </button>
+                        
+                        <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }}>
+                            <Palette size={18} className="tool-icon-draw" />
+                            <span>Rajzolj</span>
+                        </button>
+                    </div>
+
+                    {discussionOpen && story.discussionQuestions && story.discussionQuestions.length > 0 && (
+                        <div className="discussion-card animate-slide-down" style={{ marginTop: '-12px', marginBottom: '24px' }}>
+                            <div className="discussion-body open">
                                 {story.discussionQuestions.map((q, i) => (
                                     <div key={i} className="discussion-question">
                                         <span className="discussion-question-emoji">{QUESTION_EMOJIS[i] || '💬'}</span>
@@ -336,45 +374,41 @@ export default function ReaderPage() {
                         </div>
                     )}
 
-                    <div className="share-section" style={{ marginBottom: '20px' }}>
-                        <button className="next-story-btn" onClick={handleShare} style={{ background: 'var(--discussion-bg)', color: 'var(--text-primary)', border: '1.5px solid var(--border)', boxShadow: 'none', width: '100%', justifyContent: 'center' }}>
-                            📤 {t('share')}
-                        </button>
-                    </div>
-
-                    <div className="discussion-card workshop-card">
-                        <button className="discussion-toggle" onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }} style={{ color: '#ffd700' }}>
-                            <span>🎨 {t('illDraw')}</span>
-                            <span className={`discussion-arrow ${workshopOpen ? 'open' : ''}`} style={{ color: '#ffd700' }}>▼</span>
-                        </button>
-                        <div className={`accordion-body ${workshopOpen ? 'open' : ''}`}>
-                            {!isDrawingMode ? (
-                                <div className="workshop-content" style={{ padding: '10px 0 20px', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎨</div>
-                                    <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>{t('drawPrompt')}</p>
-                                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                        <button className="mese-btn drawing-main-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}>✏️ {t('drawButton')}</button>
-                                        <button className="mese-btn upload-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>📸 {t('uploadButton')}</button>
-                                    </div>
-                                    <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
-                                    {tempDrawing && (
-                                        <div style={{ marginTop: '1.5rem', position: 'relative', display: 'inline-block' }}>
-                                            <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700', cursor: 'pointer' }} onClick={() => setEnlargedImage(tempDrawing)} />
-                                            <div style={{ position: 'absolute', top: -8, right: -8, background: '#ffd700', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#1a1a2e' }}>✨</div>
+                    {workshopOpen && (
+                        <div className="discussion-card workshop-card animate-slide-down" style={{ marginTop: '-12px', marginBottom: '24px' }}>
+                            <div className="accordion-body open">
+                                {!isDrawingMode ? (
+                                    <div className="workshop-content" style={{ padding: '10px 0 20px', textAlign: 'center' }}>
+                                        <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎨</div>
+                                        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>{t('drawPrompt')}</p>
+                                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                            <button className="mese-btn drawing-main-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}>✏️ {t('drawButton')}</button>
+                                            <button className="mese-btn upload-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>📸 {t('uploadButton')}</button>
                                         </div>
-                                    )}
-                                    {uploadedFile && <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — {t('saved')}</p>}
-                                </div>
-                            ) : (
-                                <div style={{ padding: '20px 0' }}>
-                                    <DrawingCanvas onSave={handleSaveDrawing} onCancel={() => setIsDrawingMode(false)} />
-                                </div>
-                            )}
+                                        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
+                                        {tempDrawing && (
+                                            <div style={{ marginTop: '1.5rem', position: 'relative', display: 'inline-block' }}>
+                                                <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700', cursor: 'pointer' }} onClick={() => setEnlargedImage(tempDrawing)} />
+                                                <div style={{ position: 'absolute', top: -8, right: -8, background: '#ffd700', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#1a1a2e' }}>✨</div>
+                                            </div>
+                                        )}
+                                        {uploadedFile && <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — {t('saved')}</p>}
+                                    </div>
+                                ) : (
+                                    <div style={{ padding: '20px 0' }}>
+                                        <DrawingCanvas onSave={handleSaveDrawing} onCancel={() => setIsDrawingMode(false)} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    <button className="next-story-btn" onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
-                        → {t('nextStory')}
+                    <button className="gradient-next-btn group" onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
+                        <div className="gradient-next-content">
+                            <span>KÖVETKEZŐ MESE</span>
+                            <ArrowRight size={20} className="gradient-next-arrow" />
+                        </div>
+                        <div className="gradient-next-shine" />
                     </button>
                 </div>
             </div>
