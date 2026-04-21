@@ -9,7 +9,7 @@ import { useLanguage } from '../context/LanguageContext';
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
 const FEEDBACK_PRESETS = [
     { emoji: '❤️', id: 'love', label: 'Tetszett' },
-    { emoji: '🤔', id: 'neutral', label: 'Elment' },
+    { emoji: '📌', id: 'neutral', label: 'Mentés' },
     { emoji: '👎', id: 'dislike', label: 'Nem' }
 ];
 
@@ -40,6 +40,10 @@ export default function ReaderPage() {
     const [tempDrawing, setTempDrawing] = useState(existingDrawing?.dataUrl || null);
     const [workshopOpen, setWorkshopOpen] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+    const [showDislikeReasons, setShowDislikeReasons] = useState(false);
+    const [magicBurst, setMagicBurst] = useState(false);
+    // Generate a random stable number for likes so they feel connected
+    const [fakeLikes] = useState(() => Math.floor(Math.random() * 850) + 120);
 
     useEffect(() => {
         if (ratings[id]) setCurrentRating(ratings[id]);
@@ -118,12 +122,22 @@ export default function ReaderPage() {
     const handleRate = (ratingId) => {
         setCurrentRating(ratingId);
         rateStory(id, ratingId);
-        setFeedbackSubmitted(true);
+        
+        if (ratingId === 'dislike') {
+            setShowDislikeReasons(true);
+            setFeedbackSubmitted(false);
+        } else {
+            setShowDislikeReasons(false);
+            setFeedbackSubmitted(true);
+        }
         
         // Connect to Favorites Log automatically
         const isFavorited = favorites.includes(String(id)) || favorites.includes(Number(id));
         if (ratingId === 'love' && !isFavorited) {
             toggleFavorite(id);
+            // Trigger Magic Effect!
+            setMagicBurst(true);
+            setTimeout(() => setMagicBurst(false), 2500);
         } else if (ratingId !== 'love' && isFavorited) {
             // Remove from favorites if they downgrade their rating
             toggleFavorite(id);
@@ -133,6 +147,12 @@ export default function ReaderPage() {
         markAsRead(id);
 
         console.log('[Feedback] Native reaction:', ratingId);
+    };
+
+    const handleDislikeReason = (reason) => {
+        console.log('[Feedback] Dislike reason:', reason);
+        setShowDislikeReasons(false);
+        setFeedbackSubmitted(true);
     };
 
     const getNextStory = () => {
@@ -249,7 +269,15 @@ export default function ReaderPage() {
 
             <div className="reader-content" ref={contentRef}>
                 <div className="reader-cover" onDoubleClick={(e) => { e.stopPropagation(); if (story.featuredImage) setEnlargedImage(story.featuredImage); }}>
-                    {story.featuredImage ? <img src={story.featuredImage} alt={story.title} className="story-image-mock" /> : <div className="story-cover-emoji">{story.coverEmoji}</div>}
+                    {story.featuredImage ? (
+                        <img 
+                            src={story.featuredImage} 
+                            alt={story.title} 
+                            className={`story-image-mock ${favorites.includes(String(id)) || favorites.includes(Number(id)) ? 'favorited-image-glow' : ''}`} 
+                        />
+                    ) : (
+                        <div className="story-cover-emoji">{story.coverEmoji}</div>
+                    )}
                 </div>
 
                 <div className="mese-body-wrapper" style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
@@ -262,18 +290,33 @@ export default function ReaderPage() {
                     {/* 5 Quick Reaction Presets */}
                     <div className="rating-card">
                         <div className="rating-question">{feedbackSubmitted ? t('thankYou') : t('didYouLike')}</div>
-                        <div className="reaction-presets">
+                        <div className="reaction-presets" style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
                             {FEEDBACK_PRESETS.map(preset => (
-                                <button 
-                                    key={preset.id}
-                                    className={`reaction-btn ${currentRating === preset.id ? 'active' : ''}`}
-                                    onClick={(e) => { e.stopPropagation(); handleRate(preset.id); }}
-                                    title={preset.id}
-                                >
-                                    {preset.emoji}
-                                </button>
+                                <div key={preset.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                    <button 
+                                        className={`reaction-btn ${currentRating === preset.id ? 'active' : ''}`}
+                                        onClick={(e) => { e.stopPropagation(); handleRate(preset.id); }}
+                                        title={preset.label}
+                                    >
+                                        {preset.emoji}
+                                    </button>
+                                    {preset.id === 'love' && (
+                                        <div className="like-counter" style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--accent)', animation: currentRating === 'love' ? 'popIn 0.3s' : 'none' }}>
+                                            {fakeLikes + (currentRating === 'love' ? 1 : 0)}
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
+                        {showDislikeReasons && (
+                            <div className="dislike-reasons" style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '0 0 8px 0' }}>Mi volt a probléma?</p>
+                                <button className="mese-btn" onClick={() => handleDislikeReason('rossz_szoveg')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>📝 Rossz szöveg</button>
+                                <button className="mese-btn" onClick={() => handleDislikeReason('szetesett_tartalom')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>🧩 Szétesett tartalom</button>
+                                <button className="mese-btn" onClick={() => handleDislikeReason('nem_tetszett_tortenet')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>🥱 Nem tetszett a történet</button>
+                                <button className="mese-btn" onClick={() => handleDislikeReason('egyeb')} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', fontSize: '0.9rem', padding: '10px' }}>➕ Egyéb ok</button>
+                            </div>
+                        )}
                     </div>
 
                     {story.discussionQuestions && story.discussionQuestions.length > 0 && (
@@ -349,6 +392,29 @@ export default function ReaderPage() {
                 </div>
                 <div className="reader-progress-text">{scrollPercent}%</div>
             </div>
+
+            {magicBurst && (
+                <div className="magic-burst-container">
+                    {[...Array(30)].map((_, i) => {
+                        // Calculate a random explosion vector
+                        const tx = (Math.random() - 0.5) * 400; // Spread wide X
+                        const ty = -(Math.random() * 300 + 100); // Shoot up Y
+                        return (
+                            <div 
+                                key={i} 
+                                className={`magic-particle`} 
+                                style={{ 
+                                    '--tx': `${tx}px`, 
+                                    '--ty': `${ty}px`,
+                                    animationDelay: `${Math.random() * 0.15}s` 
+                                }}
+                            >
+                                {['✨', '💖', '🌟', '🪄', '⭐'][Math.floor(Math.random() * 5)]}
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

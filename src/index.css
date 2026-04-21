@@ -694,8 +694,9 @@ img {
 
 .story-image-mock { 
   width: 100%; 
-  aspect-ratio: 4/3; 
+  aspect-ratio: 1/1; 
   object-fit: cover; 
+  object-position: top center; /* Focuses on faces/upper body usually */
   border-radius: 16px; 
   border: 2px solid var(--border); 
   box-shadow: var(--shadow-md);
@@ -764,6 +765,11 @@ img {
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
   border-color: var(--accent);
+}
+
+[data-theme="sepia"] .story-card:hover {
+  border-color: #B58840;
+  box-shadow: 0 6px 20px rgba(181, 136, 64, 0.4);
 }
 
 .story-card-cover {
@@ -1076,7 +1082,8 @@ img {
 
 .story-image-mock {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 1/1;
+  object-fit: cover; /* Important to avoid stretching */
   background: var(--accent-glow);
   border-radius: 20px;
   display: flex;
@@ -1084,7 +1091,7 @@ img {
   justify-content: center;
   font-size: 5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   border: 2px solid var(--accent-soft);
 }
 
@@ -1988,3 +1995,44 @@ input:checked + .slider:before {
   border-radius: 20px;
   margin-left: 8px;
 }
+/* Magic Burst Animation for Favorites */
+.magic-burst-container {
+    position: fixed;
+    bottom: 15vh;
+    left: 50%;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 99999;
+}
+
+.magic-particle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 2.5rem;
+    opacity: 0;
+    animation: explodeParticle 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes explodeParticle {
+    0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 1; }
+    30% { opacity: 1; transform: translate(calc(var(--tx) * 0.7), calc(var(--ty) * 0.7)) scale(1.3) rotate(180deg); }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes popIn {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.3); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.favorited-image-glow {
+    animation: goldenBreathe 3s infinite alternate ease-in-out !important;
+}
+
+@keyframes goldenBreathe {
+    0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); border-color: rgba(255, 215, 0, 0.4); }
+    100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), 0 0 60px rgba(255, 215, 0, 0.3); border-color: rgba(255, 215, 0, 0.8); }
+}
+
