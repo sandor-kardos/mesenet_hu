@@ -1867,7 +1867,9 @@ input:checked + .slider:before {
   justify-content: space-evenly;
   align-items: center;
   z-index: 999;
-  opacity: 0.15;
+  opacity: 0.6; /* Increased visibility so he can find it */
+  background: rgba(0,0,0,0.05); /* Slight tint to see the bounds */
+  border-left: 1px solid rgba(0,0,0,0.1);
   transition: opacity 0.2s ease, background 0.2s ease;
   touch-action: none; /* VERY IMPORTANT: prevents page scrolling while sliding finger */
   user-select: none;
