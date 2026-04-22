@@ -14,6 +14,33 @@ const FEEDBACK_PRESETS = [
     { emoji: '👎', id: 'dislike', label: 'Nem' }
 ];
 
+/**
+ * FireEmber Komponens - Egyedi parázs szemcse
+ */
+const FireEmber = ({ id, x, y, size, delay, color }) => {
+  const driftStart = (Math.random() - 0.5) * 15;
+  const driftEnd = (Math.random() - 0.5) * 35;
+
+  return (
+    <div 
+      className="absolute pointer-events-none rounded-full animate-ember-steady opacity-0"
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        left: `${x}%`,
+        top: `${y}%`,
+        background: color,
+        boxShadow: `0 0 ${size * 5}px ${color}, 0 0 ${size * 2}px white`,
+        animationDelay: `${delay}s`,
+        '--drift-start': `${driftStart}px`,
+        '--drift-end': `${driftEnd}px`,
+        transform: 'translate(-50%, -50%)',
+        zIndex: 10
+      }}
+    />
+  );
+};
+
 export default function ReaderPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -42,7 +69,9 @@ export default function ReaderPage() {
     const [workshopOpen, setWorkshopOpen] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
     const [showDislikeReasons, setShowDislikeReasons] = useState(false);
-    const [magicBurst, setMagicBurst] = useState(false);
+    const [embers, setEmbers] = useState([]);
+    const [isJumping, setIsJumping] = useState(false);
+    const [isSharing, setIsSharing] = useState(false);
     // Generate a random stable number for likes so they feel connected
     const [fakeLikes] = useState(() => Math.floor(Math.random() * 850) + 120);
 
@@ -134,11 +163,25 @@ export default function ReaderPage() {
         
         // Connect to Favorites Log automatically
         const isFavorited = favorites.includes(String(id)) || favorites.includes(Number(id));
-        if (ratingId === 'love' && !isFavorited) {
-            toggleFavorite(id);
-            // Trigger Magic Effect!
-            setMagicBurst(true);
-            setTimeout(() => setMagicBurst(false), 2200);
+        if (ratingId === 'love') {
+            if (!isFavorited) {
+                toggleFavorite(id);
+            }
+            
+            // New Ember & Jump Effect
+            setIsJumping(true);
+            const newEmbers = Array.from({ length: 25 }).map((_, i) => ({
+                id: Math.random() + i,
+                x: 50 + (Math.random() - 0.5) * 30, // Tighter X spread
+                y: 55 + (Math.random() - 0.5) * 25, // Centered on heart
+                size: Math.random() * 3 + 2,
+                delay: Math.random() * 1.5,
+                color: Math.random() > 0.4 ? '#fbbf24' : '#ef4444', 
+            }));
+            setEmbers(newEmbers);
+            setTimeout(() => setIsJumping(false), 2400);
+            setTimeout(() => setEmbers([]), 7500);
+
         } else if (ratingId !== 'love' && isFavorited) {
             // Remove from favorites if they downgrade their rating
             toggleFavorite(id);
@@ -163,6 +206,9 @@ export default function ReaderPage() {
 
     const handleShare = async (e) => {
         e.stopPropagation();
+        setIsSharing(true);
+        setTimeout(() => setIsSharing(false), 2000);
+
         if (navigator.share) {
             try {
                 await navigator.share({
@@ -288,26 +334,39 @@ export default function ReaderPage() {
                 <div className="end-block">
                     <div className="end-marker">{t('end')}</div>
 
-                    {/* 5 Quick Reaction Presets */}
+                    {/* Premium Action Card */}
                     <div className="reader-action-card glass-blur">
                         <div className="action-row">
-                            <button 
-                                className={`action-btn ${currentRating === 'love' ? 'active-like' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); handleRate('love'); }}
-                                title={t('Tetszett')}
-                            >
-                                <Heart size={28} fill={currentRating === 'love' ? 'currentColor' : 'none'} className={currentRating === 'love' ? 'animate-jump-3' : 'hover-wiggle'} />
-                                <span className={`action-count-badge ${currentRating === 'love' ? 'active-badge' : ''}`}>
-                                    {fakeLikes + (currentRating === 'love' ? 1 : 0)}
-                                </span>
-                            </button>
+                            <div className="relative">
+                                <button 
+                                    className={`action-btn ${currentRating === 'love' ? 'active-like' : ''}`}
+                                    onClick={(e) => { e.stopPropagation(); handleRate('love'); }}
+                                    title={t('Tetszett')}
+                                >
+                                    {embers.map(e => (
+                                        <FireEmber key={e.id} x={e.x} y={e.y} size={e.size} delay={e.delay} color={e.color} />
+                                    ))}
+                                    <Heart 
+                                        size={28} 
+                                        fill={currentRating === 'love' ? 'currentColor' : 'none'} 
+                                        className={isJumping ? 'animate-jump-extra-slow' : 'hover-wiggle'} 
+                                    />
+                                    <span className={`action-count-badge ${currentRating === 'love' ? 'active-badge' : ''}`}>
+                                        {fakeLikes + (currentRating === 'love' ? 1 : 0)}
+                                    </span>
+                                </button>
+                            </div>
                             
                             <button 
                                 className={`action-btn ${currentRating === 'neutral' ? 'active-pin' : ''}`}
                                 onClick={(e) => { e.stopPropagation(); handleRate('neutral'); }}
                                 title={t('Mentés')}
                             >
-                                <Pin size={24} fill={currentRating === 'neutral' ? 'currentColor' : 'none'} className={currentRating === 'neutral' ? '' : 'hover-wiggle'} />
+                                <Pin 
+                                    size={24} 
+                                    fill={currentRating === 'neutral' ? 'currentColor' : 'none'} 
+                                    className={currentRating === 'neutral' ? 'animate-pin-stab' : 'hover-wiggle'} 
+                                />
                             </button>
 
                             <button 
@@ -315,20 +374,30 @@ export default function ReaderPage() {
                                 onClick={(e) => { e.stopPropagation(); handleRate('dislike'); }}
                                 title={t('Nem')}
                             >
-                                <ThumbsDown size={24} fill={currentRating === 'dislike' ? 'currentColor' : 'none'} className={currentRating === 'dislike' ? '' : 'hover-wiggle'} />
+                                <ThumbsDown 
+                                    size={24} 
+                                    fill={currentRating === 'dislike' ? 'currentColor' : 'none'} 
+                                    className={currentRating === 'dislike' ? 'animate-shake-calm' : 'hover-wiggle'} 
+                                />
                             </button>
 
-                            <button 
-                                className="action-btn"
-                                onClick={handleShare}
-                                title={t('Megosztás')}
-                            >
-                                <Share2 size={24} className="hover-wiggle" />
-                            </button>
+                            <div className="relative">
+                                {isSharing && <div className="absolute inset-0 rounded-full border-2 border-current animate-ripple pointer-events-none" />}
+                                <button 
+                                    className={`action-btn ${isSharing ? 'text-blue-500' : ''}`}
+                                    onClick={handleShare}
+                                    title={t('Megosztás')}
+                                >
+                                    <Share2 
+                                        size={24} 
+                                        className={isSharing ? 'animate-share-bloom' : 'hover-wiggle'} 
+                                    />
+                                </button>
+                            </div>
                         </div>
 
                         {showDislikeReasons && (
-                            <div className="feedback-grid animate-slide-down">
+                            <div className="feedback-grid animate-slide-up-smooth">
                                 <button className="feedback-btn" onClick={() => handleDislikeReason('rossz_szoveg')}>
                                     <span style={{ fontSize: '1.2rem' }}>📝</span>
                                     <span>Rossz szöveg</span>
@@ -351,12 +420,12 @@ export default function ReaderPage() {
 
                     <div className="secondary-tools-row">
                         <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
-                            <MessageCircle size={18} className="tool-icon-ask" />
+                            <MessageCircle size={22} className="tool-icon-ask" />
                             <span>Kérdezz</span>
                         </button>
                         
                         <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }}>
-                            <Palette size={18} className="tool-icon-draw" />
+                            <Palette size={22} className="tool-icon-draw" />
                             <span>Rajzolj</span>
                         </button>
                     </div>
@@ -405,8 +474,8 @@ export default function ReaderPage() {
 
                     <button className="gradient-next-btn group" onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
                         <div className="gradient-next-content">
-                            <span>KÖVETKEZŐ MESE</span>
-                            <ArrowRight size={20} className="gradient-next-arrow" />
+                            <span style={{ opacity: 0.9 }}>KÖVETKEZŐ MESE</span>
+                            <ArrowRight size={24} className="gradient-next-arrow" />
                         </div>
                         <div className="gradient-next-shine" />
                     </button>
@@ -426,29 +495,6 @@ export default function ReaderPage() {
                 </div>
                 <div className="reader-progress-text">{scrollPercent}%</div>
             </div>
-
-            {magicBurst && (
-                <div className="magic-burst-container">
-                    {[...Array(30)].map((_, i) => {
-                        // Calculate a random explosion vector
-                        const tx = (Math.random() - 0.5) * 400; // Spread wide X
-                        const ty = -(Math.random() * 300 + 100); // Shoot up Y
-                        return (
-                            <div 
-                                key={i} 
-                                className={`magic-particle`} 
-                                style={{ 
-                                    '--tx': `${tx}px`, 
-                                    '--ty': `${ty}px`,
-                                    animationDelay: `${Math.random() * 0.15}s` 
-                                }}
-                            >
-                                {['✨', '💖', '🌟', '🪄', '⭐'][Math.floor(Math.random() * 5)]}
-                            </div>
-                        );
-                    })}
-                </div>
-            )}
         </div>
     );
 }

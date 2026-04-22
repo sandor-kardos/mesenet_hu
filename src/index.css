@@ -2035,13 +2035,13 @@ input:checked + .slider:before {
 /* ========================================= */
 
 .glass-blur {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .reader-action-card {
   padding: 1.5rem;
-  border-radius: 2.5rem;
+  border-radius: 4rem;
   border: 2px solid var(--border);
   background: var(--bg-card);
   box-shadow: var(--shadow-lg);
@@ -2050,21 +2050,50 @@ input:checked + .slider:before {
   margin-bottom: 24px;
 }
 
-@keyframes heart-jump-3 {
+@keyframes ember-steady {
+  0% { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+  10% { opacity: 0.8; transform: translateY(-30px) translateX(var(--drift-start)) scale(1.1); filter: brightness(1.2); }
+  50% { opacity: 0.7; filter: brightness(1.4); }
+  90% { opacity: 0.3; }
+  100% { transform: translateY(-450px) translateX(var(--drift-end)) scale(0); opacity: 0; }
+}
+
+@keyframes heart-pulse-extra-slow {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15) translateY(-3px); }
+  30% { transform: scale(1.2) translateY(-4px); }
+  60% { transform: scale(0.98) translateY(1px); }
 }
 
-@keyframes slide-down {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pin-stab {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-25deg) scale(1.15) translateY(-2px); }
+  100% { transform: rotate(-15deg) scale(1.1); }
 }
 
-@keyframes icon-wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-12deg); }
-  75% { transform: rotate(12deg); }
+@keyframes shake-calm {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  25% { transform: translateX(-2px) rotate(-3deg); }
+  75% { transform: translateX(2px) rotate(3deg); }
 }
+
+@keyframes share-bloom {
+  0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0px currentColor); }
+  50% { transform: scale(1.2) rotate(15deg); filter: drop-shadow(0 0 15px currentColor); }
+  100% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0px currentColor); }
+}
+
+@keyframes ripple-out {
+  0% { transform: scale(1); opacity: 0.5; border-width: 2px; }
+  100% { transform: scale(2.5); opacity: 0; border-width: 1px; }
+}
+
+.animate-ember-steady { animation: ember-steady 7s linear forwards; }
+.animate-jump-extra-slow { animation: heart-pulse-extra-slow 0.8s ease-in-out 3; }
+.animate-pin-stab { animation: pin-stab 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards; }
+.animate-shake-calm { animation: shake-calm 1s ease-in-out infinite; }
+.animate-share-bloom { animation: share-bloom 0.8s ease-in-out forwards; }
+.animate-ripple { animation: ripple-out 1.2s ease-out forwards; }
+.animate-slide-up-smooth { animation: slide-down 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 .animate-jump-3 { animation: heart-jump-3 0.8s ease-in-out 2; }
 .animate-slide-down { animation: slide-down 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -2079,8 +2108,8 @@ input:checked + .slider:before {
 
 .action-btn {
   position: relative;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 1.25rem;
+  border-radius: 1.5rem;
   transition: all 0.3s ease;
   background: transparent;
   border: none;
@@ -2152,17 +2181,17 @@ input:checked + .slider:before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px;
-  border-radius: 1rem;
+  gap: 12px;
+  padding: 1.25rem;
+  border-radius: 2.8rem;
   border: 2px solid var(--border);
   transition: all 0.2s ease;
   color: var(--text-primary);
   background: var(--bg-card);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.1em;
   cursor: pointer;
 }
 
@@ -2179,12 +2208,12 @@ input:checked + .slider:before {
   position: relative;
   width: 100%;
   overflow: hidden;
-  padding: 20px;
-  border-radius: 2.2rem;
+  padding: 1.5rem;
+  border-radius: 3rem;
   background: linear-gradient(to right, var(--accent), var(--accent-light, var(--accent)));
   color: #fff;
   font-weight: 900;
-  font-size: 1rem;
+  font-size: 1.125rem;
   border: none;
   box-shadow: 0 10px 25px var(--accent-glow);
   transition: all 0.2s ease;
