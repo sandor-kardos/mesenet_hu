@@ -70,3 +70,6 @@ IMAGES FOR BLOG/verified on github.webp
 
 # Saját lokális fájlok mentésére (pl. szöveg, kép promptok)
 BACKUP/
+
+# Claude Code local settings
+.claude/settings.local.json
