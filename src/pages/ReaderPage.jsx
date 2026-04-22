@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, Pin, ThumbsDown, MessageCircle, Palette, Share2, ArrowRight, Check } from 'lucide-react';
+import { Heart, ThumbsDown, MessageCircle, Palette, Share2, ArrowRight, Check } from 'lucide-react';
 import SocialShareButton from '../components/SocialShareButton';
 import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
@@ -361,19 +361,7 @@ export default function ReaderPage() {
                                 </button>
                             </div>
                             
-                            <button 
-                                className={`action-btn ${currentRating === 'neutral' ? 'active-pin' : ''}`}
-                                onClick={(e) => { e.stopPropagation(); handleRate('neutral'); }}
-                                title={t('Mentés')}
-                            >
-                                <Pin 
-                                    size={24} 
-                                    fill={currentRating === 'neutral' ? 'currentColor' : 'none'} 
-                                    className={currentRating === 'neutral' ? 'animate-pin-stab' : 'hover-wiggle'} 
-                                />
-                            </button>
-
-                            <button 
+                            <button
                                 className={`action-btn ${currentRating === 'dislike' ? 'active-dislike' : ''}`}
                                 onClick={(e) => { e.stopPropagation(); handleRate('dislike'); }}
                                 title={t('Nem')}

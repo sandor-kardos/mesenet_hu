@@ -60,9 +60,10 @@ export function ReadingProvider({ children }) {
     }, []);
 
     const markAsRead = useCallback((storyId) => {
+        const id = String(storyId);
         setReadLog((prev) => {
-            if (prev.includes(storyId)) return prev;
-            return [...prev, storyId];
+            if (prev.includes(id)) return prev;
+            return [...prev, id];
         });
     }, []);
 
