@@ -31,6 +31,7 @@ venv/
 
 # Titkos kulcsok (Claude, Gemini, WP jelszó)
 # SOHA ne kerüljenek fel GitHubra!
+secrets/
 .env
 scripts/importer/.env
 scripts/importer/prompt.txt
@@ -73,3 +74,24 @@ BACKUP/
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Pipeline intermediate / generated files
+pages.json
+ocr_raw.json
+ocr_cleaned.json
+ocr_cleaned_sample.txt
+tales_raw.json
+tales_enriched.json
+tales_watermarked.json
+tales_with_images.json
+watermark_log.json
+scout_hits.json
+publish_log.json
+
+# Pipeline secrets
+scripts/pipeline/.env
+
+# Generated images & test data
+illustrations/
+test_sources/
+/tmp/
