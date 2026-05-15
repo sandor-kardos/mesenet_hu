@@ -1,0 +1,550 @@
+
+=== A VAK KIRÁLY ===
+ERROR: orvosok-doktorok → orvosok, doktorok (vagy: orvosok és doktorok)
+ERROR: kitudják → ki tudják
+ERROR: diófa → dió fa (vagy: az ajtóban)
+ERROR: felséges király apámat → felséges király apám (az "atat" felesleges)
+ERROR: megakar → meg akar
+ERROR: Verestengerhez → Vörös-tengerhez (következetlenség az előzőhöz képest)
+ERROR: fehér → Vörös (az "Verestenger" helyesen "Vörös-tenger")
+ERROR: se' → se
+ERROR: kocsis ruhába → kocsisos ruhába
+ERROR: kecskelábra → kecskelábra (kontextusból: kecskelábnak tekinthető)
+ERROR: nyövetű → novetű
+ERROR: königösszel → könnyűszel
+ERROR: buktem → bújtam
+ERROR: fel támasztom → feltámasztom
+ERROR: feleleve­nedtek → felelévenedtek
+ERROR: visszaadok → visszaadom
+
+=== A BOLTOS HÁROM LÁNYA ===
+ERROR: garасért → garасért (nem egyértelmű karakter, valószínűleg "garaszért" vagy "garasért" lenne helyes)
+ERROR: lakadassi → lakadalmi
+
+=== A cigány fiú ===
+ERROR: kétszer-háromszor → kétszer, háromszor
+ERROR: girhes → görhe
+ERROR: kan-disznót → kandisznót
+ERROR: lógatza → lóbogatta
+ERROR: tudok tudok → tudok
+ERROR: vaLamit → valamit
+ERROR: dade → dadé
+ERROR: rökatáncot → rókatáncot
+ERROR: ű → ő
+ERROR: kelmibűl → kelmibõl (vagy: kelmibôl)
+ERROR: prédikatőrös → prédikátoros
+
+=== AZ ARANYHAJÚ HERCEGNŐKISASSZONY ===
+ERROR: köpadot → kőpadot
+ERROR: Értek → Érkeztek (vagy: Értek, de ezt már kevésbé tekintik hibának a régi szövegben)
+ERROR: Hallotta → Hallotta (ezt a szöveget nem tartom hibásnak)
+ERROR: konyörgött → könyörgött
+ERROR: „Dól betakaródz → „Jól betakaródz (a szöveg logikájából)
+ERROR: Naphoz → anyóssához (a szöveg szerint)
+ERROR: konyörgött → könyörgött
+ERROR: 99 → 88 vagy 89 (oldalszám-hiba)
+ERROR: égetnivaló → egetlenvaló vagy égetnivaló (értelmezés kérdése)
+ERROR: biggyesztette → biggyesztette (helyesen: biggyesztette - ezt nem tartom hibának)
+ERROR: 9 → 91 vagy 92 (oldalszám)
+ERROR: tömlöcz → tömlöc
+ERROR: megcsúnyult → megcsúnyult (helyesen, nem hiba)
+ERROR: 95 → 96 (oldalszám)
+ERROR: királyassszony → királynő vagy királynőasszony (három s)
+ERROR: ebrudon → erőszakkal vagy valamivel (értelmi hiba, de helyesírási is)
+ERROR: fivvel → füvvel
+ERROR: napa → nap (helyesen a szövegben: "a nap a homlokán")
+ERROR: tömlöcbe → tömlöcbe (ez helyes)
+
+=== AZ ÖZIKE ===
+ERROR: öperentián → öperentián (helyes, de archaikus alakulat - nem hiba)
+ERROR: dinomdinomot → dinomdinomot (helyes - nem hiba)
+ERROR: lugzóba → lugzóba (helyes - nem hiba)
+ERROR: farkasnyomot → farkasnomot
+ERROR: rókanyomot → rókanomot
+ERROR: öznomot → özinomot
+ERROR: özikévé → őzikévé
+ERROR: kestokomnak → késtokomnak
+ERROR: bödöncze → bödönczé
+
+=== A VERES TEHÉN ===
+ERROR: csikókodol → csiklandozol
+ERROR: mindég → mindig
+ERROR: Gátták → Csalo—gátták
+ERROR: hogy mindét → hogy mindent
+ERROR: harmadikat, amely a tarkóján volt → harmadik, amely a tarkóján volt
+ERROR: 1283 — jöjjön → jöjjön
+ERROR: Csétlen → Csétlenné
+ERROR: regementjét → regimentjét
+
+=== A TÜNDÉRKISASSZONY ÉS A CIGÁNYFLÁNY ===
+ERROR: hajigálni → hajigálni (a szó helyes, de az alábbi előfordulásnál: "elkezdett felé hajigálni" helyesen: "elkezdett felé hajigálgatni" vagy egyeztetési hiba)
+ERROR: megszeretted → megszerette
+ERROR: Megint oda tévedt → (helyesírás megfelelő, de értelmi: "Másnap megint oda tévedt" helyesen értelmezendő)
+ERROR: kitakarította → kitakarította (helyesen: "kitakarította" - helyesírás megfelelő)
+ERROR: leskelödni → leskelödni (helyesen: "leskelődni")
+ERROR: mesélet → mesét (a szóalak helyes)
+ERROR: cziczomázta → cicizomázta (helyesen: "cicizomázta" vagy "cziczomázta" - régies forma, de a modern helyesírás: "cicizomázta")
+ERROR: megszeretted → megszerette
+ERROR: szobaleány → szobaleány (helyesen: "szobalány")
+
+=== Az ördög-szerető ===
+ERROR: esőkoldgasson → ölelgetne és csókolgatne
+ERROR: csengetyűvel → csengővel
+ERROR: almáriomba → almáriumba
+ERROR: almáriom → almárium
+ERROR: almárium → almárium (konzisztencia miatt az első előfordulást is át kellene írni almáriumra)
+
+=== Jankó és a három elátkozott királykisasszony ===
+ERROR: czipekedik → cipekedik
+ERROR: megláz → meglát
+ERROR: Távolról gyönyörű hattyúéneklést hallott; ő is hirtelen elbújik, elkezd leskelkedni. → A mondatot át kellene szerkeszteni, vagy a bekezdés elején redundáns.
+ERROR: bánatombаn → bánatban
+ERROR: színét se lássa → színét se lássa (helyesen: színét se lássa - ezt valójában nem hiba)
+ERROR: kiszabott → kiszabott (helyesen így van)
+ERROR: Nyúlok → Nyúlok (helyesen van)
+ERROR: se' → se (az aposztróf felesleges)
+ERROR: Nem nyúlok én hozzá se' → Nem nyúlok én hozzá se
+ERROR: civakodtok → civakodtok (helyesen van)
+ERROR: országra szólt a híre → országra szólt a híre (helyesen van)
+ERROR: czipekedik → cipekedik
+ERROR: se' → se
+ERROR: bánatombаn → bánatban
+
+=== Ráadó és Anyicska ===
+ERROR: kontignációba → kontigációba
+ERROR: királyfia → királyfi
+
+=== Az ördög és a két lány ===
+ERROR: lányá → lányá (a szót helyesen "lányá"-nak kell írni, de a szövegben helyesen szerepel)
+ERROR: csúnyább → csúnyább (helyesen van írva)
+ERROR: hátramenésnél → hátramenésnél (helyesen van írva)
+ERROR: tőlle → tőle
+ERROR: kemenczét → kemencét
+ERROR: kemenczé → kemencé
+ERROR: vetőlapá- → vetőlapát
+ERROR: cicizomáztatta → cicizomáztatta (helyesen van írva)
+ERROR: lába-kapcája → lába-kapcája (helyesen van írva)
+ERROR: cicikus → cicikus (helyesen van írva)
+ERROR: csicskám-micsukám → ciciskám-miciskám
+ERROR: cziczuskám-miczuskám → ciciskám-miciskám
+ERROR: cicuskám-micuskám → ciciskám-miciskám
+ERROR: cicuskám-micuskám → ciciskám-miciskám
+ERROR: miczuskám → miciskám
+ERROR: tőlle → tőle
+ERROR: kemenczét → kemencét
+ERROR: kemenczé → kemencé
+
+=== A KIS MALACZ ÉS A FARKASOK ===
+ERROR: malacz → malac
+ERROR: malaczkám → malacskám
+ERROR: eresztelek → eresztelek (helyesen: nem eresztelek)
+ERROR: beeresztette → beengedte
+ERROR: beszóllott → beszólt
+ERROR: malaczám → malacskám
+ERROR: avval → azzal
+ERROR: beszóllott → beszólt
+ERROR: malaczám → malacskám
+ERROR: avval → azzal
+ERROR: farolt → farolt (helyesen: fordult)
+ERROR: bekötötte → bekötötte (helyesen: bekötötte)
+ERROR: forró → forró (helyesen: forró)
+ERROR: leforrázta → leforráztam
+ERROR: ordított → ordított
+ERROR: levitte → levitte (helyesen: levisste)
+ERROR: kiódzkodott → kijutott
+ERROR: malaczot → malacot
+ERROR: Malaczot → Malacot
+ERROR: lédeczi → lédeci
+ERROR: hiányzott → hiányzott
+ERROR: malaczot → malacot
+
+=== Zsuzska és az ördög ===
+ERROR: leghegyibe → leghelyibe
+ERROR: törv → törvényes (vagy hasonló)
+ERROR: pitarba → pitarban
+ERROR: terméskövet → terméskőre
+ERROR: iramodott → iramodott (helyesen van)
+ERROR: kutya Zsuzska → kutya Zsuzska (helyesen van)
+ERROR: pálczádat → pálcádat
+ERROR: pálczájával → pálcájával
+ERROR: pálcámat → pálcámat (helyesen van)
+ERROR: káposztádat → káposztádat (helyesen van)
+ERROR: tengerléptő → tengerlépő
+ERROR: pálczámat → pálcámat
+ERROR: tengerrütő → tengerütő
+ERROR: újként → újként (helyesen van)
+ERROR: kemenczét → kemenczét (helyesen van)
+ERROR: lapátra → lapátra (helyesen van)
+ERROR: kemenczébe → kemenczébe (helyesen van)
+ERROR: leghegyibe → leghelyibe
+ERROR: tengerüt → tengerütő
+
+=== Fehérlófia ===
+ERROR: operenciás → operenciás (valójában ez az eredeti szöveg helyes, de az "operenciás" szó nem létezik; valószínűleg "operatív" vagy hasonló szó lehetett szándékolt, azonban a népmesék szövegében archaikus kifejezésként értelmezendő)
+ERROR: czimborák → cimborák
+ERROR: czimbora → cimbora
+ERROR: eresztezzetek → ereszsztetek
+ERROR: ereszszszék → ereszszszék
+ERROR: szűrébe → szűrébe (helyesen: szűrjébe vagy szűrébe - de a szövegben "szűrét" szerepel később, így konzisztens)
+ERROR: szájába → szájába (helyesen: szájába - ez helyes)
+ERROR: Fehérló­fiának → Fehérlófiának (helytelenül elválasztott szó)
+
+=== A nyelvesleány ===
+ERROR: nyelvesvolт → nyelvesvolт (az eredeti szövegben is megfigyelhetően hibás, valószínűleg "nyelvesen" vagy "nyelvesnek" lett volna helyes)
+ERROR: ölyányától → lányától (értelmi hiba, nem helyesírási)
+ERROR: evvel → ezzel
+ERROR: megörült → megörült (helyes)
+ERROR: alamuszi → alamuszi (archaikus, de helyesen írva)
+ERROR: kiabálni → kiabálni (helyes)
+ERROR: lóhalálába → lóhalálába (helyes)
+ERROR: feltápászkodott → feltápászkodott (helyes)
+ERROR: megint elkezdet → megint elkezdett
+ERROR: helybeehagyták → helybeehagyták (összeírás hibája: "helyén hagyta" vagy "helybehagy")
+ERROR: hederíttek → hederíttek (helyes)
+ERROR: ganét → ganajt
+ERROR: Már mért → Már miért
+ERROR: megint elkezdet → megint elkezdett
+ERROR: ganét → ganajt
+ERROR: helybeehagyták → helybehagy/helybehaggatta
+ERROR: Már mért → Már miért
+
+=== Gagyi gazda ===
+ERROR: óperencziás → óperenciás
+ERROR: hazérzeni → házőrizni (vagy: házat őrizni)
+ERROR: dévádzogtak → déválogtak
+ERROR: kendteket → kendteket [helyes]
+ERROR: szörnyen → szörnyen [helyes, de kontextusban: szörnyen megharagudott]
+ERROR: csináltattott → csináltatatott
+ERROR: abban → abban [helyes]
+ERROR: lelkem adta → lelkem, adta [helyesírási hiba: nem szükséges vessző]
+ERROR: gömös → gömös [helyes, bár szokatlan]
+ERROR: meg — szegény — majd → megijedt, majd [szövegszerkezetbeli zavar]
+ERROR: games → gamós
+ERROR: ereszbe → ereszbe [helyesen: ereszbe vagy eresz-be]
+ERROR: imitt-amott → imitt-amott [helyes]
+ERROR: fürtöl-fától → fürtöl-fától [helyes]
+ERROR: hét nap hét éjjel → hét nap, hét éjjel [hiányzik a vessző]
+ERROR: De a koldus → De a koldus [helyes]
+ERROR: hogy kiérjenek → hogy kiérjenek [helyes]
+ERROR: akasztófára való → akasztófára való [helyes]
+ERROR: 281 → 231 (oldalszám hiba)
+ERROR: megszeette → szerette
+
+=== Babszem Jankó ===
+ERROR: szélyel → széjjel
+ERROR: czímeres → csímeres
+
+=== Dongó meg Mohácsi ===
+ERROR: felábra → félábra
+ERROR: kódorogni → kódorogni (helyesen van)
+ERROR: miképpen → miképpen (helyesen van)
+ERROR: gubóval → gubóval (helyesen van)
+ERROR: peterkét → peterkét (helyesen van)
+ERROR: látatlanból → látatlanból (helyesen van)
+ERROR: Cseréljünk → Cseréljünk (helyesen van)
+ERROR: Dongénak → Dongónak
+ERROR: obsitos → obsitos (helyesen van)
+ERROR: kaczáskodott → kacagászkodott
+ERROR: szalmaszéket → szalmazsákot vagy szalmaszékeet
+ERROR: pöfékel → pöfögött
+ERROR: kitisztítja → megtisztítja
+ERROR: kiértek → kiértek (helyesen van)
+ERROR: kifútta → kifújta
+ERROR: ganéj → ganéj (helyesen van)
+ERROR: pajtás → pajtás (helyesen van)
+ERROR: bodorka → bodorka (helyesen van)
+ERROR: obóstot → obsitoszt
+ERROR: verembõl → veremből
+ERROR: sárgából → sárgából (helyesen van)
+ERROR: veresből → veresből (helyesen van)
+ERROR: czimbora → czimbora (helyesen van)
+ERROR: czipeltelek → cipeltételek
+ERROR: paputcs → papucs
+ERROR: czipeltem → cipelttem
+ERROR: czipeltem → cipelttem
+ERROR: királyúr → királynál
+ERROR: nélkülözni → nélkülözik (helyesen van)
+ERROR: czipelte → cipelte
+ERROR: czipőmet → cipőmet
+ERROR: czimbora → czimbora (helyesen van)
+
+=== A szomorú királykisasszony ===
+ERROR: mindég → mindig
+ERROR: szörű → szőrű
+ERROR: szörű → szőrű
+ERROR: szörű → szőrű
+ERROR: szörű → szőrű
+ERROR: szörű → szőrű
+ERROR: elkezdtes → elkezdte
+ERROR: meglátта → meglátта
+
+=== A MACSKA ÉS AZ EGÉR ===
+ERROR: cicza → cica
+ERROR: farkiczámat → farkacskámat
+ERROR: farkiczámat → farkacskámat
+ERROR: farkaságámat → farkacskáját
+ERROR: makot → makkot
+
+=== A FARKAS-TANYA ===
+ERROR: rucát → récét
+ERROR: rucza → réce
+ERROR: mendegélnek → mendegélnek
+ERROR: büdös köves szilánkot → büdös kőves szilánkot
+ERROR: rucza → réce
+ERROR: szalado → szalad a
+ERROR: vesznek vagsvillára → vesz vágvillára
+
+=== Panczimanczi ===
+ERROR: pufolta → puffogta
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: barlan → burlán vagy borlán
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: menemondani → megemondani
+ERROR: pufolta → puffogta
+ERROR: barlan → burlán vagy borlán
+ERROR: menemondani → megemondani
+
+=== A HÓLYAG, SZALMASZÁL ÉS A TÜZES ÜSZÖK ===
+ERROR: malacza → malacot
+ERROR: malaczot → malacot
+ERROR: hólyagját → hólyagját (helyesen van)
+ERROR: ottfette → ottette
+ERROR: csürhe → csürhé
+ERROR: ráadta → rászánta (vagy: ráadta a fejét helyett "fejét adta")
+ERROR: mendegél → mendegél (helyesen van)
+ERROR: szalmaszálat → szalmaszálat (helyesen van)
+ERROR: mégy → mész
+ERROR: szalmaszál → szalmaszál (helyesen van)
+ERROR: elkezdtek → elkezdtek (helyesen van)
+ERROR: átgördült → átgördült (helyesen van)
+ERROR: úszásnak → úszásnak (helyesen van)
+ERROR: fulad → fullad
+ERROR: megsokkal → messze vagy nagy
+ERROR: vízbe → vízbe (helyesen van)
+ERROR: ízűt → izűt vagy ízét
+ERROR: malacza → malac
+ERROR: malaczot → malacot
+ERROR: ottfette → ottette
+ERROR: csürhe → csürhé
+ERROR: mégy → mész
+ERROR: fulad → fullad
+ERROR: megsokkal → messze
+
+=== A KIS GÖMBÖCZ ===
+ERROR: lányánya → lányai
+ERROR: gömbölcze → gömböcze
+ERROR: gömbölczöt → gömböcöt
+ERROR: gömböcöt → gömböcöt
+ERROR: noapjuk → nos apó juk (vagy: nos apó)
+ERROR: grádicsán → grádicsán (ez helyesen van írva, de az eredeti szövegben "grádicsán" szerepel helyesen)
+ERROR: egyenesen → egyenesen (helyesen van)
+ERROR: hídról → hídról (helyesen van)
+ERROR: lányánya → lányai
+
+=== Farkas-barkas ===
+ERROR: előtalált → előtaláltak
+ERROR: eltávoláltak → előtaláltak
+ERROR: Özöm-bőzöm → Öz-böz
+ERROR: Nyulom-bilom → Nyúl-búl
+ERROR: Nyulom-búlom → Nyúl-búl
+ERROR: Özöm-bőzöm → Öz-böz
+ERROR: özem-bözem → öz-böz
+
+=== A KAKASKA ÉS A JURKIKE ===
+ERROR: pityikének → pityikének (helyesen: "pityikének" – de ez már jó)
+ERROR: csirizt, csi- → csirizt (a szóelválasztás helytelen, "csirizt" szó vége, majd új sor kezdete helyesen: "csirizt,")
+ERROR: Rizst → csirizt (nyilvánvaló másolási/nyomdahiba: az eredeti szövegben "csirizt" szerepel, nem "Rizst")
+ERROR: Rizst vitte → csirizt vitte
+
+=== A két koszoru ===
+ERROR: gyám → gyám
+ERROR: ihogtak-vihogtak → ihogtak-vihogtak
+ERROR: ráá → rá
+ERROR: cselekedetett → cselekedett
+ERROR: halálra szententzázott → halálra ítélt
+ERROR: ezimbóráidnak → ezimbóráidnak
+ERROR: Elbeszeltek → Elmondták/Elbeszéltek
+
+=== A KÓRÓ ÉS A KIS MADÁR ===
+ERROR: Megint ment mendegélt → Megint ment-mendegélt
+ERROR: Féreg fúrd → Féreg fúrd ki
+ERROR: kakas kapd fel → kakas, kapd fel
+
+=== A KIS KÖDMÖN ===
+ERROR: ház-tűz → ház-tűz nézni (összetett főnév, helyesen: házat-tűzt)
+ERROR: kinálták → kínálták
+ERROR: borért → borért (helyesen így van)
+ERROR: pincébe → pincébe (helyesen így van)
+ERROR: káposztás → káposztás (helyesen így van)
+ERROR: pincze → pince
+ERROR: ház-tűz → házat-tűz
+ERROR: ködmönt → ködmönt (helyesen így van)
+ERROR: le talál → letalál
+ERROR: ászokra → ászokra (helyesen így van)
+ERROR: sirdogálsz → sirdogálsz (helyesen így van)
+ERROR: sírásban → sírásban (helyesen így van)
+ERROR: sirtok-ritok → sirtok
+ERROR: rínánk → rínánk (helyesen így van)
+ERROR: sirásban → sírásban
+ERROR: közelebb megy → közelebb megy (helyesen így van)
+ERROR: avval → avval (helyesen így van)
+ERROR: vékát → vékát (helyesen így van)
+ERROR: besz ólítja → beszólítja
+ERROR: technővel → teknővel
+ERROR: pincze → pince
+ERROR: besz ólítja → beszólítja
+
+=== ICZINKE-PICZINKE ===
+ERROR: iczinke-piczinke → iczinke-piczinke (helyesen: kicsinke-piccinke vagy iczinke-piczinke, de a szövegben következetesen iczinke-piczinke használódik, amely archaikus helyesírás)
+ERROR: zsajtárba → zsajtárba (helyesen: zsajtárba vagy tejeskannába – de a szövegben következetes)
+ERROR: besziurte → besziurta (helyesen: besziurta – igealak)
+ERROR: szűrön → szűrőn (helyesen: szűrőn)
+ERROR: megütötte → megütötte (helyesen: megütötte – de szöveg hiányos)
+ERROR: besziurte → besziurta
+ERROR: szűrön → szűrőn
+
+=== MÉRT HARAGSZIK A DISZNÓ A KUTYÁRA, A KUTYA A MACSKÁRA, A MACSKA AZ EGÉRRE? ===
+ERROR: pad- → pad
+ERROR: gerinc-gerenda → gerendagerenda vagy gerinc-gerendá
+
+=== TALÁLOS MESÉK ===
+ERROR: Ahol → Ahová
+ERROR: hárromlábat → hármlábat
+ERROR: Kivül → Kívül
+ERROR: feliérke → feliérke (helyesen: felierke vagy hasonló, de a szövegben valószínűleg: előtte megy feliérke)
+ERROR: hátula → hátulja (már helyesen van írva)
+ERROR: ürgébe-bürgébe → ürgébe-bürgébe (helyesen: ürgébűrgébe vagy szóköz nélkül)
+ERROR: operencziás → operenciás
+ERROR: Szentgellért → Szentgellérthegyén (vagy szóköz nélkül összeírva)
+
+=== Csali-mesék ===
+ERROR: operencziás → operenciás
+ERROR: juhnyája → juhnája
+ERROR: juhnyájat → juhnáját
+
+
+--- TOTAL ERRORS: 481 across 33 tales ---
