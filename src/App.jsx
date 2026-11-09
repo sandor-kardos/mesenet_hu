@@ -29,14 +29,16 @@ function AppContent() {
   return (
     <div className={isReader ? '' : 'app-shell'} key={lang}>
       {!isReader && <Header />}
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/read/:id" element={<ReaderPage />} />
-        <Route path="/mese/:slug" element={<ReaderPage />} />
-        <Route path="/discover" element={<DiscoverPage />} />
-        <Route path="/log" element={<LogPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-      </Routes>
+      <main id="main-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/read/:id" element={<ReaderPage />} />
+          <Route path="/mese/:slug" element={<ReaderPage />} />
+          <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/log" element={<LogPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </main>
       <TabBar />
     </div>
   );

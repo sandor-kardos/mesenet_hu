@@ -1,7 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-
 /* ============================================
-   DESIGN SYSTEM — mesenet.hu
+   DESIGN SYSTEM - mesenet.hu
    ============================================ */
 
 :root,
@@ -11,9 +9,9 @@
   --bg-card: #FFFFFF;
   --bg-card-hover: #F0F0F8;
   --text-primary: #2D2D3A;
-  --text-secondary: #6B6B80;
-  --text-muted: #9E9EB5;
-  --accent: #6C63FF;
+  --text-secondary: #525266;
+  --text-muted: #595970;
+  --accent: #584EE2;
   --accent-soft: rgba(108, 99, 255, 0.1);
   --accent-glow: rgba(108, 99, 255, 0.25);
   --border: #E8E8F0;
@@ -27,7 +25,7 @@
   --chip-bg: #F0F0F8;
   --chip-active-bg: var(--accent);
   --chip-active-text: #FFFFFF;
-  --tab-inactive: #B0B0C0;
+  --tab-inactive: #595970;
   --continue-overlay: rgba(0, 0, 0, 0.55);
 }
 
@@ -36,10 +34,10 @@
   --bg-secondary: #D2C19E;
   --bg-card: #D7C6A6;
   --bg-card-hover: #CEBD9B;
-  --text-primary: #4A3A2C;
-  --text-secondary: #705B43;
-  --text-muted: #8E7A60;
-  --accent: #B08556;
+  --text-primary: #3A2C20;
+  --text-secondary: #544330;
+  --text-muted: #5E4B36;
+  --accent: #8C6336;
   --accent-soft: rgba(176, 133, 86, 0.15);
   --accent-glow: rgba(176, 133, 86, 0.3);
   --border: #C2B191;
@@ -53,7 +51,7 @@
   --chip-bg: #D2C19E;
   --chip-active-bg: var(--accent);
   --chip-active-text: #FFFFFF;
-  --tab-inactive: #8E7A60;
+  --tab-inactive: #5E4B36;
   --continue-overlay: rgba(60, 40, 20, 0.7);
 }
 
@@ -63,8 +61,8 @@
   --bg-card: #242442;
   --bg-card-hover: #2C2C50;
   --text-primary: #E0E0F0;
-  --text-secondary: #A0A0C0;
-  --text-muted: #6B6B90;
+  --text-secondary: #B8B8D8;
+  --text-muted: #A6A6C8;
   --accent: #BB86FC;
   --accent-soft: rgba(187, 134, 252, 0.12);
   --accent-glow: rgba(187, 134, 252, 0.3);
@@ -79,7 +77,7 @@
   --chip-bg: #2A2A4A;
   --chip-active-bg: var(--accent);
   --chip-active-text: #1A1A2E;
-  --tab-inactive: #5A5A80;
+  --tab-inactive: #A6A6C8;
   --continue-overlay: rgba(0, 0, 0, 0.7);
 }
 

@@ -21,7 +21,11 @@ export default function StoryList({ title, stories, hideSeeAll = false }) {
                         <div className="story-list-cover" style={story.featuredImage ? { padding: 0 } : {}}>
                             {story.featuredImage ? (
                                 <img 
-                                    src={story.featuredImage} 
+                                    src={story.cardImage || story.featuredImage}
+                                    srcSet={story.srcSet}
+                                    sizes="80px"
+                                    width="80"
+                                    height="80"
                                     alt={story.title} 
                                     style={{ 
                                         width: '100%', 
@@ -31,6 +35,7 @@ export default function StoryList({ title, stories, hideSeeAll = false }) {
                                         objectPosition: story.focalPoint || 'center 30%'
                                     }} 
                                     loading="lazy"
+                                    decoding="async"
                                 />
                             ) : (
                                 story.coverEmoji

@@ -26,7 +26,11 @@ export default function ContinueCard() {
                 <div className="continue-emoji" style={story.featuredImage ? { padding: 0, overflow: 'hidden', background: 'transparent' } : {}}>
                     {story.featuredImage ? (
                         <img 
-                            src={story.featuredImage} 
+                            src={story.cardImage || story.featuredImage}
+                            srcSet={story.srcSet}
+                            sizes="80px"
+                            width="80"
+                            height="80"
                             alt={story.title} 
                             style={{ 
                                 width: '100%', 
@@ -36,6 +40,7 @@ export default function ContinueCard() {
                                 objectPosition: story.focalPoint || 'center 30%'
                             }} 
                             loading="lazy"
+                            decoding="async"
                         />
                     ) : (
                         story.coverEmoji

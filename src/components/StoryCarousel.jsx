@@ -42,7 +42,7 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
             <div className="carousel-wrapper">
                 <button className="carousel-nav-btn left" onClick={(e) => { e.stopPropagation(); scroll('left'); }} aria-label="Scroll left">‹</button>
                 <div className={`story-carousel ${isSmall ? 'small-carousel' : ''}`} ref={scrollRef}>
-                    {stories.map((story) => (
+                    {stories.map((story, idx) => (
                         <div
                             key={story.id}
                             className="story-card"
@@ -53,7 +53,11 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                             <div className={`story-card-cover ${isSmall ? 'small-cover' : ''}`} style={story.featuredImage ? { background: 'transparent' } : {}}>
                                 {story.featuredImage ? (
                                     <img 
-                                        src={story.featuredImage} 
+                                        src={story.cardImage || story.featuredImage}
+                                        srcSet={story.srcSet}
+                                        sizes="(max-width: 600px) 210px, 260px"
+                                        width="210"
+                                        height="280"
                                         alt={story.title} 
                                         style={{ 
                                             width: '100%', 
@@ -62,7 +66,8 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                                             pointerEvents: 'none',
                                             objectPosition: story.focalPoint || 'center 30%'
                                         }} 
-                                        loading="lazy"
+                                        loading={idx < 2 && !isSmall ? 'eager' : 'lazy'}
+                                        decoding="async"
                                     />
                                 ) : (
                                     story.coverEmoji

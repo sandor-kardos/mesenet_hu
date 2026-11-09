@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useStories } from '../context/StoryContext';
-import Header from '../components/Header';
 import ContinueCard from '../components/ContinueCard';
 import MoralWeightFilter from '../components/MoralWeightFilter';
 import StoryCarousel from '../components/StoryCarousel';
@@ -13,17 +12,7 @@ export default function HomePage() {
     const { t } = useLanguage();
     const [filteredStories, setFilteredStories] = useState(null);
 
-    // Provide immediate loading and error states to wait for API data
-    if (isLoading) {
-        return (
-            <div className="fade-in" style={{ padding: '80px 20px', textAlign: 'center' }}>
-                <div style={{ fontSize: '3rem', animation: 'spin 2s linear infinite' }}>⏳</div>
-                <h2 style={{ marginTop: '20px' }}>{t('loadingStories')}</h2>
-            </div>
-        );
-    }
-
-    if (error) {
+    if (error && stories.length === 0) {
         return (
             <div className="fade-in" style={{ padding: '80px 20px', textAlign: 'center' }}>
                 <div style={{ fontSize: '3rem' }}>⚠️</div>
@@ -49,7 +38,12 @@ export default function HomePage() {
             <ContinueCard />
             <MoralWeightFilter onFilterChange={setFilteredStories} />
 
-            {filteredStories ? (
+            {isLoading && stories.length === 0 ? (
+                <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+                    <div style={{ fontSize: '2.5rem', animation: 'spin 2s linear infinite' }}>⏳</div>
+                    <p style={{ marginTop: '12px', fontWeight: 600 }}>{t('loadingStories')}</p>
+                </div>
+            ) : filteredStories ? (
                 <StoryList title={t('tonightsStories')} stories={filteredStories.slice(0, 5)} hideSeeAll={true} />
             ) : (
                 <>
