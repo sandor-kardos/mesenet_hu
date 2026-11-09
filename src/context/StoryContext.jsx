@@ -24,10 +24,16 @@ export function StoryProvider({ children }) {
     useEffect(() => {
         const fetchStories = async () => {
             try {
-                const res = await fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100');
-                if (!res.ok) throw new Error('Nem sikerült betölteni a meséket az API-ból.');
-                
-                const data = await res.json();
+                let data = null;
+                if (typeof window !== 'undefined' && window.__MESENET_STORIES_PROMISE__) {
+                    data = await window.__MESENET_STORIES_PROMISE__;
+                    window.__MESENET_STORIES_PROMISE__ = null;
+                }
+                if (!data) {
+                    const res = await fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100');
+                    if (!res.ok) throw new Error('Nem sikerült betölteni a meséket az API-ból.');
+                    data = await res.json();
+                }
                 
                 const mappedStories = data.map(post => {
                     const acf = post.acf || {};

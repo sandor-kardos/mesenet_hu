@@ -16,6 +16,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- Parallel API Prefetch: eliminates sequential JS -> API waterfall for LCP -->
+    <script>
+      window.__MESENET_STORIES_PROMISE__ = fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100')
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .catch(function() { return null; });
+    </script>
+
     <!-- Non-render-blocking Google Fonts -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
@@ -39,7 +46,7 @@
     <meta name="twitter:image" content="https://api.mesenet.hu/wp-content/uploads/2026/11/a-vak-kiraly-nepmese.webp" />
 
     <script defer src="https://stats.sandorkardos.com/script.js" data-website-id="2e21dffa-52a4-4744-a3e2-6c1f95515e19"></script>
-    <script type="module" crossorigin src="/assets/index-Bw6NehE_.js"></script>
+    <script type="module" crossorigin src="/assets/index-CfkSUCkM.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ECaubEYT.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>

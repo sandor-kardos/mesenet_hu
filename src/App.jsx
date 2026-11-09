@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ReadingProvider } from './context/ReadingContext';
@@ -6,20 +7,11 @@ import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
 import HomePage from './pages/HomePage';
-import ReaderPage from './pages/ReaderPage';
-import DiscoverPage from './pages/DiscoverPage';
-import LogPage from './pages/LogPage';
-import ProfilePage from './pages/ProfilePage';
 
-function PlaceholderPage({ emoji, title, desc }) {
-  return (
-    <div className="placeholder-page fade-in">
-      <div className="placeholder-emoji">{emoji}</div>
-      <div className="placeholder-title">{title}</div>
-      <div className="placeholder-desc">{desc}</div>
-    </div>
-  );
-}
+const ReaderPage = lazy(() => import('./pages/ReaderPage'));
+const DiscoverPage = lazy(() => import('./pages/DiscoverPage'));
+const LogPage = lazy(() => import('./pages/LogPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 
 function AppContent() {
   const location = useLocation();
@@ -30,14 +22,16 @@ function AppContent() {
     <div className={isReader ? '' : 'app-shell'} key={lang}>
       {!isReader && <Header />}
       <main id="main-content">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/read/:id" element={<ReaderPage />} />
-          <Route path="/mese/:slug" element={<ReaderPage />} />
-          <Route path="/discover" element={<DiscoverPage />} />
-          <Route path="/log" element={<LogPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Routes>
+        <Suspense fallback={<div style={{ padding: '60px 20px', textAlign: 'center' }}>⏳</div>}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/read/:id" element={<ReaderPage />} />
+            <Route path="/mese/:slug" element={<ReaderPage />} />
+            <Route path="/discover" element={<DiscoverPage />} />
+            <Route path="/log" element={<LogPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Routes>
+        </Suspense>
       </main>
       <TabBar />
     </div>

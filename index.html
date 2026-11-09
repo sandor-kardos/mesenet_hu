@@ -16,6 +16,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+    <!-- Parallel API Prefetch: eliminates sequential JS -> API waterfall for LCP -->
+    <script>
+      window.__MESENET_STORIES_PROMISE__ = fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100')
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .catch(function() { return null; });
+    </script>
+
     <!-- Non-render-blocking Google Fonts -->
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" media="print" onload="this.media='all'" />
