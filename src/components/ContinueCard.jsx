@@ -19,13 +19,24 @@ export default function ContinueCard() {
     return (
         <div
             className="continue-card fade-in"
-            onClick={() => navigate(`/read/${story.id}`)}
+            onClick={() => navigate(story.slug ? `/mese/${story.slug}` : `/read/${story.id}`)}
             id="continue-card"
         >
             <div className="continue-card-inner">
                 <div className="continue-emoji" style={story.featuredImage ? { padding: 0, overflow: 'hidden', background: 'transparent' } : {}}>
                     {story.featuredImage ? (
-                        <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                        <img 
+                            src={story.featuredImage} 
+                            alt={story.title} 
+                            style={{ 
+                                width: '100%', 
+                                height: '100%', 
+                                objectFit: 'cover', 
+                                borderRadius: 'inherit',
+                                objectPosition: story.focalPoint || 'center 30%'
+                            }} 
+                            loading="lazy"
+                        />
                     ) : (
                         story.coverEmoji
                     )}

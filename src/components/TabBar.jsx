@@ -13,7 +13,7 @@ export default function TabBar() {
     ];
 
     // Hide tab bar on reader pages
-    if (location.pathname.startsWith('/read/')) return null;
+    if (location.pathname.startsWith('/read/') || location.pathname.startsWith('/mese/')) return null;
 
     return (
         <nav className="tab-bar" id="tab-bar">

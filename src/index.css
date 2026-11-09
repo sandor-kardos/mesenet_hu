@@ -694,12 +694,16 @@ img {
 
 .story-image-mock { 
   width: 100%; 
-  aspect-ratio: 1/1; 
+  aspect-ratio: 3/4; 
+  max-height: 65vh;
   object-fit: cover; 
-  object-position: top center; /* Focuses on faces/upper body usually */
-  border-radius: 16px; 
-  border: 2px solid var(--border); 
-  box-shadow: var(--shadow-md);
+  object-position: top center;
+  border-radius: 20px; 
+  border: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  margin: 0 auto 24px;
+  display: block;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .lightbox-overlay { 
@@ -1080,10 +1084,11 @@ img {
   align-items: center;
 }
 
-.story-image-mock {
+.story-image-placeholder {
   width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover; /* Important to avoid stretching */
+  aspect-ratio: 3/4;
+  max-height: 65vh;
+  object-fit: cover;
   background: var(--accent-glow);
   border-radius: 20px;
   display: flex;
@@ -1092,7 +1097,7 @@ img {
   font-size: 5rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   margin-bottom: 24px;
-  border: 2px solid var(--accent-soft);
+  border: none;
 }
 
 .story-image-actions {

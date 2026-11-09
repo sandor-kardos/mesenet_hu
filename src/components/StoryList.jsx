@@ -15,12 +15,23 @@ export default function StoryList({ title, stories, hideSeeAll = false }) {
                     <div
                         key={story.id}
                         className="story-list-item"
-                        onClick={() => navigate(`/read/${story.id}`)}
+                        onClick={() => navigate(story.slug ? `/mese/${story.slug}` : `/read/${story.id}`)}
                         id={`story-list-${story.id}`}
                     >
                         <div className="story-list-cover" style={story.featuredImage ? { padding: 0 } : {}}>
                             {story.featuredImage ? (
-                                <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                                <img 
+                                    src={story.featuredImage} 
+                                    alt={story.title} 
+                                    style={{ 
+                                        width: '100%', 
+                                        height: '100%', 
+                                        objectFit: 'cover', 
+                                        borderRadius: 'inherit',
+                                        objectPosition: story.focalPoint || 'center 30%'
+                                    }} 
+                                    loading="lazy"
+                                />
                             ) : (
                                 story.coverEmoji
                             )}

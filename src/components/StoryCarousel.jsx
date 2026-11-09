@@ -22,13 +22,13 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
         setDragStart({ x: e.clientX, y: e.clientY });
     };
 
-    const handleMouseUp = (e, storyId) => {
+    const handleMouseUp = (e, story) => {
         const deltaX = Math.abs(e.clientX - dragStart.x);
         const deltaY = Math.abs(e.clientY - dragStart.y);
         
         // 10px threshold for drag vs click
         if (deltaX < 10 && deltaY < 10) {
-            navigate(`/read/${storyId}`);
+            navigate(story.slug ? `/mese/${story.slug}` : `/read/${story.id}`);
         }
     };
 
@@ -47,12 +47,23 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                             key={story.id}
                             className="story-card"
                             onMouseDown={handleMouseDown}
-                            onMouseUp={(e) => handleMouseUp(e, story.id)}
+                            onMouseUp={(e) => handleMouseUp(e, story)}
                             id={`story-card-${story.id}`}
                         >
                             <div className={`story-card-cover ${isSmall ? 'small-cover' : ''}`} style={story.featuredImage ? { background: 'transparent' } : {}}>
                                 {story.featuredImage ? (
-                                    <img src={story.featuredImage} alt={story.title} style={{ width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none' }} />
+                                    <img 
+                                        src={story.featuredImage} 
+                                        alt={story.title} 
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '100%', 
+                                            objectFit: 'cover', 
+                                            pointerEvents: 'none',
+                                            objectPosition: story.focalPoint || 'center 30%'
+                                        }} 
+                                        loading="lazy"
+                                    />
                                 ) : (
                                     story.coverEmoji
                                 )}

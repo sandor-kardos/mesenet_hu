@@ -33,10 +33,10 @@ export default function HomePage() {
         );
     }
 
-    // "Nektek ajánljuk" — shuffle for demo
+    // "Nektek ajánljuk" · shuffle for variety
     const recommended = [...stories].sort(() => Math.random() - 0.5);
-    // "Friss mesék" — last 4 (changed from 3 to 4 to match image)
-    const fresh = stories.slice(-4).reverse();
+    // "Friss mesék" · newest published stories by ID descending
+    const fresh = [...stories].sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 6);
 
     return (
         <div className="fade-in">

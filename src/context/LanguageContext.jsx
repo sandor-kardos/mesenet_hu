@@ -38,7 +38,7 @@ const translations = {
         tagsLabel: 'Címkék:',
         loadingStories: 'Mesék betöltése...',
         somethingWentWrong: 'A manóba, valami elromlott!',
-        readerSubtitle: 'Mesenet — Mesék, amik számítanak',
+        readerSubtitle: 'Mesenet · Mesék, amik számítanak',
         
         // Discover
         discoverLabel: 'Felfedezés',
@@ -135,7 +135,7 @@ const translations = {
         tagsLabel: 'Tags:',
         loadingStories: 'Loading stories...',
         somethingWentWrong: 'Oops, something went wrong!',
-        readerSubtitle: 'Mesenet — Stories that matter',
+        readerSubtitle: 'Mesenet · Stories that matter',
         
         // Discover
         discoverLabel: 'Discover',

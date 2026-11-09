@@ -23,7 +23,7 @@ function PlaceholderPage({ emoji, title, desc }) {
 
 function AppContent() {
   const location = useLocation();
-  const isReader = location.pathname.startsWith('/read/');
+  const isReader = location.pathname.startsWith('/read/') || location.pathname.startsWith('/mese/');
   const { lang } = useLanguage();
 
   return (
@@ -32,6 +32,7 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/read/:id" element={<ReaderPage />} />
+        <Route path="/mese/:slug" element={<ReaderPage />} />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/log" element={<LogPage />} />
         <Route path="/profile" element={<ProfilePage />} />

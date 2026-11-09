@@ -10,8 +10,8 @@ export default function LogPage() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('history'); // 'history' or 'favorites'
 
-  const readStories = stories.filter(s => readLog.includes(String(s.id)));
-  const favoriteStories = stories.filter(s => favorites.includes(String(s.id)) || favorites.includes(Number(s.id)));
+  const readStories = stories.filter(s => readLog.some(id => String(id) === String(s.id)));
+  const favoriteStories = stories.filter(s => favorites.some(id => String(id) === String(s.id)));
 
 
   if (isLoading) return <div className="page-content fade-in" style={{ textAlign: 'center', paddingTop: '100px' }}>⏳ {t('loadingStories')}</div>;

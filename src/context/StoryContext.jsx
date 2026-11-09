@@ -41,14 +41,20 @@ export function StoryProvider({ children }) {
                     const featuredMedia = post._embedded?.['wp:featuredmedia'];
                     const featuredImage = featuredMedia && featuredMedia.length > 0 ? featuredMedia[0].source_url : null;
 
+                    // Extract smart focal point if present
+                    const contentHtml = post.content?.rendered || '';
+                    const focalMatch = contentHtml.match(/id=['"]mese-focal-point['"][^>]*>([^<]+)<\/div>/);
+                    const focalPoint = focalMatch ? focalMatch[1].trim() : 'center 30%';
+
                     return {
                         id: post.id,
                         title: post.title?.rendered || 'Névtelen mese',
                         slug: post.slug,
-                        content: post.content?.rendered || '', 
+                        content: contentHtml, 
                         heroImage: acf.hero_image || '📖',
                         coverEmoji: acf.hero_image || '📖',
                         featuredImage: featuredImage,
+                        focalPoint: focalPoint,
                         readingTime: parseInt(acf.reading_time) || 5,
                         ageGroup: ageGroups.length > 0 ? ageGroups[0] : '4-6',
                         collection: collections.length > 0 ? collections[0] : null,

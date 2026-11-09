@@ -1,11 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, ThumbsDown, MessageCircle, Palette, Share2, ArrowRight, Check } from 'lucide-react';
+import { Heart, ThumbsDown, Bookmark, MessageCircle, Share2, ArrowRight, Check } from 'lucide-react';
 import SocialShareButton from '../components/SocialShareButton';
 import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
-import DrawingCanvas from '../components/DrawingCanvas';
 import { useLanguage } from '../context/LanguageContext';
 
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
@@ -46,14 +45,77 @@ const FireEmber = ({ id, x, y, size, delay, color }) => {
 };
 
 export default function ReaderPage() {
-    const { id } = useParams();
+    const { id, slug } = useParams();
     const navigate = useNavigate();
     const { cycleTheme, themeIcon } = useTheme();
-    const { updateProgress, markAsRead, rateStory, ratings, lastRead, saveDrawing, userDrawings, favorites, toggleFavorite } = useReading();
+    const { updateProgress, markAsRead, rateStory, ratings, lastRead, favorites, toggleFavorite, isFavorite } = useReading();
     const { stories, isLoading, error } = useStories();
     const { t, toggleLanguage } = useLanguage();
 
-    const story = stories.find((s) => String(s.id) === String(id));
+    const storyParam = slug || id;
+    const story = stories.find((s) => String(s.id) === String(storyParam) || s.slug === storyParam);
+    const isSaved = story ? isFavorite(story.id) : false;
+
+    // Dynamic Open Graph & Meta Tags for High-CTR Social Sharing
+    useEffect(() => {
+        if (!story) return;
+        document.title = `${story.title} · Mesenet.hu`;
+
+        const updateMeta = (prop, content) => {
+            if (!content) return;
+            const isOg = prop.startsWith('og:');
+            let el = document.querySelector(`meta[${isOg ? 'property' : 'name'}="${prop}"]`);
+            if (!el) {
+                el = document.createElement('meta');
+                el.setAttribute(isOg ? 'property' : 'name', prop);
+                document.head.appendChild(el);
+            }
+            el.setAttribute('content', content);
+        };
+
+        const shareUrl = window.location.origin ? `${window.location.origin}/mese/${story.slug || story.id}` : `https://mesenet.hu/mese/${story.slug || story.id}`;
+        const shareDesc = `Olvasd el a(z) „${story.title}” című mesét a Mesenet.hu-n! Ingyenes esti mese gyönyörű illusztrációval és beszélgetős kérdésekkel gyerekeknek.`;
+
+        updateMeta('og:title', `${story.title} · Mesenet.hu`);
+        updateMeta('og:description', shareDesc);
+        updateMeta('og:url', shareUrl);
+        updateMeta('og:type', 'article');
+        if (story.featuredImage) {
+            updateMeta('og:image', story.featuredImage);
+            updateMeta('twitter:image', story.featuredImage);
+        }
+        updateMeta('twitter:card', 'summary_large_image');
+        updateMeta('twitter:title', `${story.title} · Mesenet.hu`);
+        updateMeta('twitter:description', shareDesc);
+
+        // Schema.org JSON-LD Structured Data for Google Rich Snippets
+        let schemaScript = document.querySelector('script[data-schema="story"]');
+        if (!schemaScript) {
+            schemaScript = document.createElement('script');
+            schemaScript.type = 'application/ld+json';
+            schemaScript.setAttribute('data-schema', 'story');
+            document.head.appendChild(schemaScript);
+        }
+        schemaScript.textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ShortStory",
+            "name": story.title,
+            "headline": story.title,
+            "inLanguage": "hu",
+            "url": shareUrl,
+            "image": story.featuredImage || "https://api.mesenet.hu/wp-content/uploads/a-vak-kiraly-nepmese.png",
+            "description": shareDesc,
+            "author": {
+                "@type": "Person",
+                "name": story.collection || "Magyar népmese"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "Mesenet.hu",
+                "url": "https://mesenet.hu"
+            }
+        });
+    }, [story]);
     const contentRef = useRef(null);
     const hideTimeout = useRef(null);
     const fileInputRef = useRef(null);
@@ -286,6 +348,19 @@ export default function ReaderPage() {
                 result = prefix.replace(/~ Vége ~/g, '').replace(/~ The End ~/g, '') + suffix;
             }
         }
+        // Security / XSS Sanitization: neutralize any unsafe tags and event handlers
+        root.querySelectorAll('script, iframe, object, embed, form').forEach(el => el.remove());
+        root.querySelectorAll('*').forEach(el => {
+            for (const attr of Array.from(el.attributes)) {
+                if (attr.name.toLowerCase().startsWith('on') || attr.value.toLowerCase().includes('javascript:')) {
+                    el.removeAttribute(attr.name);
+                }
+            }
+        });
+
+        // Strip visible OCR artifacts and em-dashes
+        result = result.replace(/—\s*\d+\s*—/g, '');
+        result = result.replace(/—/g, '–');
         return result.trim();
     };
 
@@ -308,12 +383,19 @@ export default function ReaderPage() {
                 </div>
                 <div className="header-col-right">
                     <div className="reader-actions-group">
+                        <button 
+                            className="icon-btn-small" 
+                            onClick={(e) => { e.stopPropagation(); if (story) toggleFavorite(story.id); }}
+                            title={isSaved ? 'Mentve a könyvtárba' : 'Mentés a könyvtárba'}
+                            style={isSaved ? { color: '#ffd700', borderColor: '#ffd700', background: 'rgba(255, 215, 0, 0.15)' } : {}}
+                        >
+                            <Bookmark size={17} fill={isSaved ? 'currentColor' : 'none'} />
+                        </button>
                         <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); setFontSize(p => p >= 150 ? 100 : p + 25); }}>
                             🔍<span className="tiny-percent">{fontSize}%</span>
                         </button>
                         <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}>🪄</button>
                         <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); cycleTheme(); }}>{themeIcon}</button>
-                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); navigate('/profile'); }}>👤</button>
                     </div>
                 </div>
             </div>
@@ -325,6 +407,8 @@ export default function ReaderPage() {
                             src={story.featuredImage} 
                             alt={story.title} 
                             className="story-image-mock" 
+                            style={{ objectPosition: story.focalPoint || 'center 30%' }}
+                            loading="eager"
                         />
                     ) : (
                         <div className="story-cover-emoji">{story.coverEmoji}</div>
@@ -370,6 +454,19 @@ export default function ReaderPage() {
                                     size={24} 
                                     fill={currentRating === 'dislike' ? 'currentColor' : 'none'} 
                                     className={currentRating === 'dislike' ? 'animate-shake-calm' : 'hover-wiggle'} 
+                                />
+                            </button>
+
+                            <button
+                                className={`action-btn ${isSaved ? 'active-save' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); if (story) toggleFavorite(story.id); }}
+                                title={isSaved ? 'Mentve a könyvtárba' : 'Mentés a könyvtárba'}
+                                style={isSaved ? { color: '#ffd700', borderColor: '#ffd700', background: 'rgba(255, 215, 0, 0.12)' } : {}}
+                            >
+                                <Bookmark 
+                                    size={25} 
+                                    fill={isSaved ? 'currentColor' : 'none'} 
+                                    className={isSaved ? 'animate-jump-extra-slow' : 'hover-wiggle'} 
                                 />
                             </button>
 
@@ -426,23 +523,20 @@ export default function ReaderPage() {
 
                         {showSharePanel && (
                             <SocialShareButton
-                                url={window.location.href}
+                                url={typeof window !== 'undefined' && window.location.origin ? `${window.location.origin}/mese/${story.slug || story.id}` : `https://mesenet.hu/mese/${story.slug || story.id}`}
                                 title={story.title}
                             />
                         )}
                     </div>
 
-                    <div className="secondary-tools-row">
-                        <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
-                            <MessageCircle size={22} className="tool-icon-ask" />
-                            <span>Kérdezz</span>
-                        </button>
-                        
-                        <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setWorkshopOpen(!workshopOpen); }}>
-                            <Palette size={22} className="tool-icon-draw" />
-                            <span>Rajzolj</span>
-                        </button>
-                    </div>
+                    {story.discussionQuestions && story.discussionQuestions.length > 0 && (
+                        <div className="secondary-tools-row" style={{ justifyContent: 'center' }}>
+                            <button className="secondary-tool-btn group" onClick={(e) => { e.stopPropagation(); setDiscussionOpen(!discussionOpen); }}>
+                                <MessageCircle size={22} className="tool-icon-ask" />
+                                <span>Kérdezz</span>
+                            </button>
+                        </div>
+                    )}
 
                     {discussionOpen && story.discussionQuestions && story.discussionQuestions.length > 0 && (
                         <div className="discussion-card animate-slide-down" style={{ marginTop: '-12px', marginBottom: '24px' }}>
@@ -457,36 +551,7 @@ export default function ReaderPage() {
                         </div>
                     )}
 
-                    {workshopOpen && (
-                        <div className="discussion-card workshop-card animate-slide-down" style={{ marginTop: '-12px', marginBottom: '24px' }}>
-                            <div className="accordion-body open">
-                                {!isDrawingMode ? (
-                                    <div className="workshop-content" style={{ padding: '10px 0 20px', textAlign: 'center' }}>
-                                        <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>🎨</div>
-                                        <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>{t('drawPrompt')}</p>
-                                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                            <button className="mese-btn drawing-main-btn" onClick={(e) => { e.stopPropagation(); setIsDrawingMode(true); }}>✏️ {t('drawButton')}</button>
-                                            <button className="mese-btn upload-btn" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>📸 {t('uploadButton')}</button>
-                                        </div>
-                                        <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} />
-                                        {tempDrawing && (
-                                            <div style={{ marginTop: '1.5rem', position: 'relative', display: 'inline-block' }}>
-                                                <img src={tempDrawing} alt="Saját rajz" style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '12px', border: '2px solid #ffd700', cursor: 'pointer' }} onClick={() => setEnlargedImage(tempDrawing)} />
-                                                <div style={{ position: 'absolute', top: -8, right: -8, background: '#ffd700', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: '#1a1a2e' }}>✨</div>
-                                            </div>
-                                        )}
-                                        {uploadedFile && <p style={{ color: '#ffd700', fontSize: '0.8rem', marginTop: '1rem' }}>✅ <strong>{uploadedFile.name}</strong> — {t('saved')}</p>}
-                                    </div>
-                                ) : (
-                                    <div style={{ padding: '20px 0' }}>
-                                        <DrawingCanvas onSave={handleSaveDrawing} onCancel={() => setIsDrawingMode(false)} />
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    <button className="gradient-next-btn group" onClick={(e) => { e.stopPropagation(); navigate(`/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
+                    <button className="gradient-next-btn group" onClick={(e) => { e.stopPropagation(); navigate(nextStory.slug ? `/mese/${nextStory.slug}` : `/read/${nextStory.id}`); window.scrollTo(0, 0); }}>
                         <div className="gradient-next-content">
                             <span style={{ opacity: 0.9 }}>KÖVETKEZŐ MESE</span>
                             <ArrowRight size={24} className="gradient-next-arrow" />

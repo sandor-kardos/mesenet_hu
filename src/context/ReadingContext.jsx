@@ -73,10 +73,16 @@ export function ReadingProvider({ children }) {
 
     const toggleFavorite = useCallback((storyId) => {
         setFavorites((prev) => {
-            if (prev.includes(storyId)) return prev.filter(id => id !== storyId);
-            return [...prev, storyId];
+            const idStr = String(storyId);
+            const exists = prev.some(id => String(id) === idStr);
+            if (exists) return prev.filter(id => String(id) !== idStr);
+            return [...prev, idStr];
         });
     }, []);
+
+    const isFavorite = useCallback((storyId) => {
+        return favorites.some(id => String(id) === String(storyId));
+    }, [favorites]);
 
     const clearProgress = useCallback(() => {
         setLastRead(null);
@@ -110,6 +116,7 @@ export function ReadingProvider({ children }) {
             updateProgress,
             markAsRead,
             toggleFavorite,
+            isFavorite,
             rateStory,
             saveDrawing,
             deleteDrawing,

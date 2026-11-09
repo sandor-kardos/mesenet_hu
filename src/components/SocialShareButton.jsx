@@ -21,48 +21,76 @@ const XIcon = ({ size = 20 }) => (
 
 const PLATFORMS = [
   {
-    label: 'Facebook',
-    icon: FacebookIcon,
-    color: '#1877F2',
-    bg: 'rgba(24,119,242,0.10)',
-    getHref: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-  },
-  {
     label: 'WhatsApp',
     icon: WhatsAppIcon,
     color: '#25D366',
-    bg: 'rgba(37,211,102,0.10)',
-    getHref: (url, title) => `https://wa.me/?text=${encodeURIComponent(title + '\n' + url)}`,
+    bg: 'rgba(37,211,102,0.12)',
+    getHref: (url, title) => `https://wa.me/?text=${encodeURIComponent(`📖 *${title}* | Mesenet.hu\n\n✨ Nézd meg ezt a gyönyörű esti mesét: illusztrációval és beszélgetős kérdésekkel készült gyerekeknek. Olvasd el itt ingyen:\n👉 ${url}`)}`,
   },
   {
-    label: 'X (Twitter)',
+    label: 'Facebook',
+    icon: FacebookIcon,
+    color: '#1877F2',
+    bg: 'rgba(24,119,242,0.12)',
+    getHref: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+  },
+  {
+    label: 'X',
     icon: XIcon,
     color: '#000000',
-    bg: 'rgba(0,0,0,0.07)',
-    getHref: (url, title) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`,
+    bg: 'rgba(0,0,0,0.08)',
+    getHref: (url, title) => `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(`✨ Olvasd el a(z) „${title}” című mesét a Mesenet.hu-n! 📖 Ingyenes esti mese gyerekeknek illusztrációval:`)}`,
   },
   {
     label: 'Email',
     icon: Mail,
     color: '#EA4335',
-    bg: 'rgba(234,67,53,0.10)',
-    getHref: (url, title) => `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(url)}`,
+    bg: 'rgba(234,67,53,0.12)',
+    getHref: (url, title) => `mailto:?subject=${encodeURIComponent(`📖 Meseajánló: ${title}`)}&body=${encodeURIComponent(`Szia!\n\nGondoltam, tetszeni fog ez a gyönyörű mese a Mesenet.hu-n:\n\n${title}\n\nIngyen elolvashatod itt:\n${url}\n\nJó olvasást kívánok!`)}`,
   },
 ];
 
 export default function SocialShareButton({ url, title }) {
   const [copied, setCopied] = useState(false);
+  const shareText = `📖 ${title} | Mesenet.hu\n✨ Olvasd el ezt a gyönyörű esti mesét itt: ${url}`;
 
   const handleCopy = async (e) => {
     e.stopPropagation();
-    try { await navigator.clipboard.writeText(url); } catch (_) {}
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try { 
+      await navigator.clipboard.writeText(url); 
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (_) {}
   };
+
+  const handleNativeShare = async (e) => {
+    e.stopPropagation();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${title} · Mesenet.hu`,
+          text: `✨ Nézd meg ezt a gyönyörű mesét a Mesenet.hu-n: ${title}`,
+          url: url,
+        });
+      } catch (_) {}
+    } else {
+      handleCopy(e);
+    }
+  };
+
+  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   return (
     <div className="social-share-panel animate-slide-up-smooth">
-      <p className="social-share-label">Megosztás</p>
+      <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+        <p className="social-share-label" style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, opacity: 0.9 }}>
+          ✨ Oszd meg más szülőkkel is!
+        </p>
+        <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', opacity: 0.75 }}>
+          Küldd el a mesét ismerőseidnek egy kattintással
+        </span>
+      </div>
+
       <div className="social-share-grid">
         {PLATFORMS.map(({ label, icon: Icon, color, bg, getHref }) => (
           <a
@@ -89,6 +117,30 @@ export default function SocialShareButton({ url, title }) {
           <span>{copied ? 'Másolva!' : 'Link'}</span>
         </button>
       </div>
+
+      {hasNativeShare && (
+        <button 
+          onClick={handleNativeShare}
+          style={{
+            marginTop: '10px',
+            width: '100%',
+            padding: '8px 12px',
+            borderRadius: '12px',
+            background: 'var(--accent-soft)',
+            color: 'var(--accent)',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '6px',
+            border: '1px solid var(--accent-glow)',
+            cursor: 'pointer'
+          }}
+        >
+          <span>📲</span> Megosztás a telefonon
+        </button>
+      )}
     </div>
   );
 }
