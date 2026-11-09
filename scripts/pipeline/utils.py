@@ -230,6 +230,11 @@ def upload_media(img, slug: str, alt_text: str = "", title_text: str = "", descr
 def upload_to_wp(data: dict, mid=None, update_id=None, source_url=None) -> int:
     print("[*] CMS Layer Synchronization...")
     content = f"<div class='mese-body'>{data.get('content')}</div>"
+    if data.get("focal_point"):
+        content += (
+            f"\n<div id='mese-focal-point' style='display: none;'>"
+            f"{data['focal_point']}</div>"
+        )
     if data.get("image_prompt"):
         content += (
             f"\n<div id='mese-hidden-image-prompt' style='display: none;'>"
@@ -238,8 +243,9 @@ def upload_to_wp(data: dict, mid=None, update_id=None, source_url=None) -> int:
 
     payload = {
         "title":   data.get("title"),
+        "slug":    data.get("slug"),
         "content": content,
-        "status":  "draft",
+        "status":  data.get("status", "publish"),
         "acf": {
             "hero_image":      data.get("hero_image"),
             "reading_time":    data.get("reading_time"),

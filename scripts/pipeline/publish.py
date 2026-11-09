@@ -133,6 +133,7 @@ def main():
     parser.add_argument("--output", default=OUTPUT_DEFAULT, help=f"Output log JSON (default: {OUTPUT_DEFAULT})")
     parser.add_argument("--dry-run", action="store_true",   help="Parse and validate only; do not publish")
     parser.add_argument("--resume",  action="store_true",   help="Skip slugs already in publish_log.json")
+    parser.add_argument("--limit",   type=int, default=None, help="Maximum number of tales to process")
     args = parser.parse_args()
 
     # Resolve input file
@@ -153,17 +154,30 @@ def main():
     print(f"[*] Loaded {len(tales)} tales from {input_path}")
 
     if args.dry_run:
+        count = 0
         for t in tales:
+            if args.limit and count >= args.limit:
+                break
             print(f"  dry-run: {t.get('slug')} — {t.get('title')}")
-        print("[+] Dry run complete — nothing published")
+            count += 1
+        print(f"[+] Dry run complete ({count} tales validated) — nothing published")
         return
 
-    # Init DB
-    conn = get_db_conn()
-    with conn.cursor() as cur:
-        cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
-        cur.execute(CREATE_TABLE_SQL)
-    conn.commit()
+    # Init DB (Optional - Headless WP is primary DB)
+    conn = None
+    if os.getenv("DATABASE_URL"):
+        try:
+            conn = get_db_conn()
+            with conn.cursor() as cur:
+                cur.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto;")
+                cur.execute(CREATE_TABLE_SQL)
+            conn.commit()
+            print("[+] Connected to Neon Postgres")
+        except Exception as e:
+            print(f"[!] DB connection failed: {e} — continuing with WordPress only")
+            conn = None
+    else:
+        print("[*] DATABASE_URL not set — using headless WordPress as primary CMS/DB")
 
     # Init R2
     bucket = os.getenv("R2_BUCKET")
@@ -172,7 +186,12 @@ def main():
     log = load_publish_log(args.output)
     done_slugs = set(log.keys()) if args.resume else set()
 
+    published_count = 0
     for i, tale in enumerate(tales, start=1):
+        if args.limit and published_count >= args.limit:
+            print(f"[*] Reached limit of {args.limit} tales.")
+            break
+
         slug = tale.get("slug", f"tale-{i}")
 
         if slug in done_slugs:
@@ -181,11 +200,23 @@ def main():
 
         print(f"\n[*] Publishing [{i}/{len(tales)}]: {tale.get('title', slug)}")
 
-        # 1. Get image bytes from R2
+        # 1. Get image bytes from R2 or local filesystem
         img_bytes = None
         r2_key = tale.get("r2_key")
         if r2_key and s3 and bucket:
             img_bytes = download_from_r2(s3, bucket, r2_key)
+        elif tale.get("local_path") and os.path.exists(tale["local_path"]):
+            with open(tale["local_path"], "rb") as f:
+                img_bytes = f.read()
+            print(f"  [+] Loaded image from local path: {tale['local_path']}")
+        else:
+            # Try finding image in illustrations folder by slug
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            candidate = os.path.join(base_dir, "illustrations", f"{slug}.png")
+            if os.path.exists(candidate):
+                with open(candidate, "rb") as f:
+                    img_bytes = f.read()
+                print(f"  [+] Found local image: {candidate}")
 
         # 2. Upload image to WP media
         media_id = None
@@ -202,9 +233,10 @@ def main():
         existing_id = check_duplicate(slug)
         wp_post_id = upload_to_wp(tale, mid=media_id, update_id=existing_id)
 
-        # 4. Upsert Postgres
-        upsert_db(conn, tale, wp_post_id)
-        print(f"  [+] DB upserted: {slug}")
+        # 4. Upsert Postgres (if connected)
+        if conn:
+            upsert_db(conn, tale, wp_post_id)
+            print(f"  [+] DB upserted: {slug}")
 
         published_at = datetime.now(timezone.utc).isoformat()
         log[slug] = {
@@ -214,8 +246,10 @@ def main():
             "published_at": published_at,
         }
         save_publish_log(log, args.output)
+        published_count += 1
 
-    conn.close()
+    if conn:
+        conn.close()
     print(f"\n[+] publish_log.json written: {len(log)} entries -> {args.output}")
 
 
