@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mesenet.hu — Gyorsítótár frissítése...</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+    .box { max-width: 420px; padding: 32px; background: rgba(255,255,255,0.06); border-radius: 16px; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>🔄 Gyorsítótár és Service Worker frissítése...</h2>
+    <p id="status">Régi PWA cache törlése folyamatban...</p>
+  </div>
+  <script>
+    (async function() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          for (const reg of regs) {
+            await reg.unregister();
+          }
+        }
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          for (const key of keys) {
+            await caches.delete(key);
+          }
+        }
+        try {
+          localStorage.removeItem('mesenet_stories_cache_v1');
+          localStorage.removeItem('mesenet_stories_cache_v2');
+          localStorage.removeItem('mesenet_stories_cache_v3');
+          localStorage.removeItem('mesenet_stories_cache_v4');
+        } catch (e) {}
+        document.getElementById('status').textContent = '✅ Kész! Átirányítás a friss főoldalra...';
+      } catch (err) {
+        console.error(err);
+      }
+      setTimeout(function() {
+        window.location.replace('/?fresh=' + Date.now());
+      }, 600);
+    })();
+  </script>
+</body>
+</html>
