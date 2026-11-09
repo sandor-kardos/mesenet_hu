@@ -67,6 +67,7 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                                             objectPosition: story.focalPoint || 'center 30%'
                                         }} 
                                         loading={idx < 2 && !isSmall ? 'eager' : 'lazy'}
+                                        fetchPriority={idx < 2 && !isSmall ? 'high' : 'auto'}
                                         decoding="async"
                                     />
                                 ) : (
