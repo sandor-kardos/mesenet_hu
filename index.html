@@ -16,8 +16,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Parallel API Prefetch: eliminates sequential JS -> API waterfall for LCP -->
+    <!-- Parallel API Prefetch + Self-Healing Legacy SW Cache Buster -->
     <script>
+      if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(function(keys) {
+          keys.forEach(function(k) {
+            if (k.indexOf('mesenet-pwa-v6') === -1) caches.delete(k);
+          });
+        });
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(reg) {
+            if (reg.active && reg.active.scriptURL && reg.active.scriptURL.indexOf('sw-v6.js') === -1) {
+              reg.unregister();
+            }
+          });
+        });
+      }
       window.__MESENET_STORIES_PROMISE__ = fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100')
         .then(function(r) { return r.ok ? r.json() : null; })
         .catch(function() { return null; });

@@ -48,7 +48,7 @@ export default function ReaderPage() {
     const { id, slug } = useParams();
     const navigate = useNavigate();
     const { cycleTheme, themeIcon } = useTheme();
-    const { updateProgress, markAsRead, rateStory, ratings, lastRead, favorites, toggleFavorite, isFavorite } = useReading();
+    const { updateProgress, markAsRead, rateStory, ratings, lastRead, favorites, toggleFavorite, isFavorite, userDrawings = [], saveDrawing } = useReading();
     const { stories, isLoading, error } = useStories();
     const { t, toggleLanguage } = useLanguage();
 
@@ -59,14 +59,15 @@ export default function ReaderPage() {
         s.slug === `${storyParam}-nepmese` ||
         s.slug?.replace(/-nepmese$/, '') === storyParam?.replace(/-nepmese$/, '')
     );
+    const storyId = story ? story.id : id;
     const isSaved = story ? isFavorite(story.id) : false;
 
     // Canonical URL enforcement: If loaded via /read/:id or non-canonical slug, redirect to /mese/:slug
     useEffect(() => {
-        if (story && story.slug && id) {
+        if (story && story.slug && (id || slug !== story.slug)) {
             navigate(`/mese/${story.slug}`, { replace: true });
         }
-    }, [story, id, navigate]);
+    }, [story, id, slug, navigate]);
 
     // Dynamic Open Graph & Meta Tags for High-CTR Social Sharing
     useEffect(() => {
@@ -138,11 +139,11 @@ export default function ReaderPage() {
     const [enlargedImage, setEnlargedImage] = useState(null); 
     const [scrollPercent, setScrollPercent] = useState(0);
     const [discussionOpen, setDiscussionOpen] = useState(false);
-    const [currentRating, setCurrentRating] = useState(ratings[id] || null);
+    const [currentRating, setCurrentRating] = useState(ratings[storyId] || null);
     const [uploadedFile, setUploadedFile] = useState(null);
     const [isDrawingMode, setIsDrawingMode] = useState(false);
     
-    const existingDrawing = userDrawings.find(d => String(d.storyId) === String(id));
+    const existingDrawing = userDrawings.find(d => String(d.storyId) === String(storyId));
     const [tempDrawing, setTempDrawing] = useState(existingDrawing?.dataUrl || null);
     const [workshopOpen, setWorkshopOpen] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -156,11 +157,12 @@ export default function ReaderPage() {
     const [fakeLikes] = useState(() => Math.floor(Math.random() * 850) + 120);
 
     useEffect(() => {
-        if (ratings[id]) setCurrentRating(ratings[id]);
-    }, [id, ratings]);
+        if (storyId && ratings[storyId]) setCurrentRating(ratings[storyId]);
+        else setCurrentRating(null);
+    }, [storyId, ratings]);
 
     useEffect(() => {
-        if (lastRead && String(lastRead.storyId) === String(id) && lastRead.scrollPercent > 0) {
+        if (lastRead && storyId && String(lastRead.storyId) === String(storyId) && lastRead.scrollPercent > 0) {
             setTimeout(() => {
                 const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
                 if (scrollHeight > 0) {
@@ -168,7 +170,7 @@ export default function ReaderPage() {
                 }
             }, 500);
         }
-    }, [id, lastRead]);
+    }, [storyId, lastRead]);
 
     const handleScroll = useCallback(() => {
         const scrollTop = window.scrollY;
@@ -212,14 +214,14 @@ export default function ReaderPage() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            if (scrollPercent > 0) updateProgress(id, scrollPercent);
+            if (scrollPercent > 0 && storyId) updateProgress(storyId, scrollPercent);
         }, 5000);
         return () => clearInterval(interval);
-    }, [scrollPercent, id, updateProgress]);
+    }, [scrollPercent, storyId, updateProgress]);
 
     useEffect(() => {
-        if (scrollPercent >= 95) markAsRead(id);
-    }, [scrollPercent, id, markAsRead]);
+        if (scrollPercent >= 95 && storyId) markAsRead(storyId);
+    }, [scrollPercent, storyId, markAsRead]);
 
     const handleContentClick = () => {
         setHeaderVisible(true);
@@ -230,19 +232,20 @@ export default function ReaderPage() {
     };
 
     const handleRate = (ratingId) => {
+        if (!storyId) return;
         // Toggle off if the same rating is clicked again
         if (currentRating === ratingId) {
             setCurrentRating(null);
-            rateStory(id, null);
+            rateStory(storyId, null);
             setShowDislikeReasons(false);
             setFeedbackSubmitted(false);
-            const isFavorited = favorites.includes(String(id)) || favorites.includes(Number(id));
-            if (ratingId === 'love' && isFavorited) toggleFavorite(id);
+            const isFavorited = favorites.includes(String(storyId)) || favorites.includes(Number(storyId));
+            if (ratingId === 'love' && isFavorited) toggleFavorite(storyId);
             return;
         }
 
         setCurrentRating(ratingId);
-        rateStory(id, ratingId);
+        rateStory(storyId, ratingId);
 
         if (ratingId === 'dislike') {
             setShowDislikeReasons(true);
@@ -253,10 +256,10 @@ export default function ReaderPage() {
         }
 
         // Connect to Favorites Log automatically
-        const isFavorited = favorites.includes(String(id)) || favorites.includes(Number(id));
+        const isFavorited = favorites.includes(String(storyId)) || favorites.includes(Number(storyId));
         if (ratingId === 'love') {
             if (!isFavorited) {
-                toggleFavorite(id);
+                toggleFavorite(storyId);
             }
             
             // New Ember & Jump Effect
@@ -275,11 +278,11 @@ export default function ReaderPage() {
 
         } else if (ratingId !== 'love' && isFavorited) {
             // Remove from favorites if they downgrade their rating
-            toggleFavorite(id);
+            toggleFavorite(storyId);
         }
 
         // Also ensure it is marked as read since they gave feedback!
-        markAsRead(id);
+        markAsRead(storyId);
 
         console.log('[Feedback] Native reaction:', ratingId);
     };
@@ -293,7 +296,7 @@ export default function ReaderPage() {
     };
 
     const getNextStory = () => {
-        const idx = stories.findIndex((s) => String(s.id) === String(id));
+        const idx = stories.findIndex((s) => String(s.id) === String(storyId));
         return stories[(idx + 1) % stories.length];
     };
 
@@ -313,7 +316,7 @@ export default function ReaderPage() {
     const handleSaveDrawing = (dataUrl) => {
         setTempDrawing(dataUrl);
         setIsDrawingMode(false);
-        saveDrawing(id, dataUrl);
+        if (storyId && saveDrawing) saveDrawing(storyId, dataUrl);
         setUploadedFile({ name: 'Saját rajz.png' });
     };
 

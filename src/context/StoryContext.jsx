@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const StoryContext = createContext();
-const CACHE_KEY = 'mesenet_stories_cache_v3';
+const CACHE_KEY = 'mesenet_stories_cache_v4';
 
 export function StoryProvider({ children }) {
     const [stories, setStories] = useState(() => {

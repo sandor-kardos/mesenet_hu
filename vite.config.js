@@ -8,6 +8,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      filename: 'sw-v6.js',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'mesenet.hu',
@@ -32,12 +33,13 @@ export default defineConfig({
         ]
       },
       workbox: {
-        cacheId: 'mesenet-pwa-v5', // Forced cache bust for fresh stories & Max SEO routing
+        cacheId: 'mesenet-pwa-v6',
+        skipWaiting: true,
+        clientsClaim: true,
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest}'],
         navigateFallback: '/index.html',
         navigateFallbackAllowlist: [/^(?!\/__).*/],
-        // Additional options to ensure sw.js generation
         sourcemap: true
       },
       devOptions: {

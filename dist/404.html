@@ -16,8 +16,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Parallel API Prefetch: eliminates sequential JS -> API waterfall for LCP -->
+    <!-- Parallel API Prefetch + Self-Healing Legacy SW Cache Buster -->
     <script>
+      if ('serviceWorker' in navigator && 'caches' in window) {
+        caches.keys().then(function(keys) {
+          keys.forEach(function(k) {
+            if (k.indexOf('mesenet-pwa-v6') === -1) caches.delete(k);
+          });
+        });
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          regs.forEach(function(reg) {
+            if (reg.active && reg.active.scriptURL && reg.active.scriptURL.indexOf('sw-v6.js') === -1) {
+              reg.unregister();
+            }
+          });
+        });
+      }
       window.__MESENET_STORIES_PROMISE__ = fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100')
         .then(function(r) { return r.ok ? r.json() : null; })
         .catch(function() { return null; });
@@ -46,7 +60,7 @@
     <meta name="twitter:image" content="https://api.mesenet.hu/wp-content/uploads/2026/11/a-vak-kiraly-nepmese.webp" />
 
     <script defer src="https://stats.sandorkardos.com/script.js" data-website-id="2e21dffa-52a4-4744-a3e2-6c1f95515e19"></script>
-    <script type="module" crossorigin src="/assets/index-CfkSUCkM.js"></script>
+    <script type="module" crossorigin src="/assets/index-CG8QLBAA.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-ECaubEYT.css">
   <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>

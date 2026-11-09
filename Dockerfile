@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build && cp dist/index.html dist/404.html
+RUN npm run build && cp dist/index.html dist/404.html && cp dist/sw-v6.js dist/sw.js
 
 # Stage 2: Serve with Nginx + SPA Fallback + Security Headers
 FROM nginx:alpine
