@@ -40,6 +40,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest}'],
         navigateFallback: '/index.html',
         navigateFallbackAllowlist: [/^(?!\/__).*/],
+        navigateFallbackDenylist: [/^\/\.well-known\//, /\.(?:json|txt|xml|php)$/i],
         sourcemap: true
       },
       devOptions: {
