@@ -53,8 +53,20 @@ export default function ReaderPage() {
     const { t, toggleLanguage } = useLanguage();
 
     const storyParam = slug || id;
-    const story = stories.find((s) => String(s.id) === String(storyParam) || s.slug === storyParam);
+    const story = stories.find((s) => 
+        String(s.id) === String(storyParam) || 
+        s.slug === storyParam ||
+        s.slug === `${storyParam}-nepmese` ||
+        s.slug?.replace(/-nepmese$/, '') === storyParam?.replace(/-nepmese$/, '')
+    );
     const isSaved = story ? isFavorite(story.id) : false;
+
+    // Canonical URL enforcement: If loaded via /read/:id or non-canonical slug, redirect to /mese/:slug
+    useEffect(() => {
+        if (story && story.slug && id) {
+            navigate(`/mese/${story.slug}`, { replace: true });
+        }
+    }, [story, id, navigate]);
 
     // Dynamic Open Graph & Meta Tags for High-CTR Social Sharing
     useEffect(() => {
