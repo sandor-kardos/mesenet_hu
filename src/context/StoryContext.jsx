@@ -48,6 +48,7 @@ export function StoryProvider({ children }) {
 
                     return {
                         id: post.id,
+                        date: post.date,
                         title: post.title?.rendered || 'Névtelen mese',
                         slug: post.slug,
                         content: contentHtml, 

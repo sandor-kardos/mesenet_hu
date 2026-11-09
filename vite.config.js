@@ -32,7 +32,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        cacheId: 'mesenet-pwa-v4', // Changed ID to force bust on mobile
+        cacheId: 'mesenet-pwa-v5', // Forced cache bust for fresh stories & Max SEO routing
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webmanifest}'],
         navigateFallback: '/index.html',

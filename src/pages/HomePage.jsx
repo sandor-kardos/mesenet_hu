@@ -35,8 +35,14 @@ export default function HomePage() {
 
     // "Nektek ajánljuk" · shuffle for variety
     const recommended = [...stories].sort(() => Math.random() - 0.5);
-    // "Friss mesék" · newest published stories by ID descending
-    const fresh = [...stories].sort((a, b) => Number(b.id) - Number(a.id)).slice(0, 6);
+    // "Friss mesék" · newest published stories by date or ID descending
+    const fresh = [...stories].sort((a, b) => {
+        if (b.date && a.date) {
+            const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
+            if (diff !== 0) return diff;
+        }
+        return Number(b.id) - Number(a.id);
+    }).slice(0, 6);
 
     return (
         <div className="fade-in">
