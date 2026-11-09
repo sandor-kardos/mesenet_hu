@@ -22,8 +22,8 @@ export default function HomePage() {
         );
     }
 
-    // "Nektek ajánljuk" · shuffle for variety
-    const recommended = [...stories].sort(() => Math.random() - 0.5);
+    // "Nektek ajánljuk" · shuffle for variety (limit to 6 cards on home carousel to avoid downloading 17 images on mobile 4G)
+    const recommended = [...stories].sort(() => Math.random() - 0.5).slice(0, 6);
     // "Friss mesék" · newest published stories by date or ID descending
     const fresh = [...stories].sort((a, b) => {
         if (b.date && a.date) {

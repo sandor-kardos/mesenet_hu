@@ -10,26 +10,33 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>" />
     <title>mesenet.hu · Mesék, amik számítanak</title>
 
-    <!-- Preconnect to critical origins (saves ~660ms on 4G) -->
+    <!-- Preconnect to critical origins (both no-cors for img/script and crossorigin for fetch/fonts) -->
+    <link rel="preconnect" href="https://api.mesenet.hu" />
     <link rel="preconnect" href="https://api.mesenet.hu" crossorigin />
-    <link rel="preconnect" href="https://stats.sandorkardos.com" crossorigin />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://stats.sandorkardos.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Parallel API Prefetch + Self-Healing Legacy SW Cache Buster -->
+    <!-- Parallel API Prefetch + Self-Healing Legacy SW Cache Buster + Deferred SW Registration -->
     <script>
-      if ('serviceWorker' in navigator && 'caches' in window) {
-        caches.keys().then(function(keys) {
-          keys.forEach(function(k) {
-            if (k.indexOf('mesenet-pwa-v6') === -1) caches.delete(k);
+      if ('serviceWorker' in navigator) {
+        if ('caches' in window) {
+          caches.keys().then(function(keys) {
+            keys.forEach(function(k) {
+              if (k.indexOf('mesenet-pwa-v6') === -1) caches.delete(k);
+            });
           });
-        });
+        }
         navigator.serviceWorker.getRegistrations().then(function(regs) {
           regs.forEach(function(reg) {
             if (reg.active && reg.active.scriptURL && reg.active.scriptURL.indexOf('sw-v6.js') === -1) {
               reg.unregister();
             }
           });
+        });
+        window.addEventListener('load', function() {
+          setTimeout(function() {
+            navigator.serviceWorker.register('/sw-v6.js', { scope: '/' }).catch(function() {});
+          }, 2000);
         });
       }
       window.__MESENET_STORIES_PROMISE__ = fetch('https://api.mesenet.hu/wp-json/wp/v2/mese?_embed&per_page=100')
