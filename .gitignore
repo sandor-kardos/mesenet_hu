@@ -95,3 +95,6 @@ scripts/pipeline/.env
 illustrations/
 test_sources/
 /tmp/
+
+# Local safety copies (e.g. old Dockerfile patch)
+.local-backup/
