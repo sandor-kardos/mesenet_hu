@@ -6,6 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
 import { useLanguage } from '../context/LanguageContext';
+import { stripZwj, watermarkOnCopy } from '../utils/watermark';
 
 const QUESTION_EMOJIS = ['🫶', '🌱', '💡'];
 const FEEDBACK_PRESETS = [
@@ -384,7 +385,7 @@ export default function ReaderPage() {
     if (!story) return <div className="reader-shell"><div className="placeholder-page"><div className="placeholder-emoji">📖</div><div className="placeholder-title">{t('storyNotFound')}</div><button className="next-story-btn" onClick={() => navigate('/')}>← {t('backToHome')}</button></div></div>;
 
     const nextStory = getNextStory();
-    const contentHtml = cleanContent(story.content.includes('<p>') ? story.content : story.content.split('\n\n').map(p => `<p>${p}</p>`).join(''));
+    const contentHtml = stripZwj(cleanContent(story.content.includes('<p>') ? story.content : story.content.split('\n\n').map(p => `<p>${p}</p>`).join('')));
 
     return (
         <div className="reader-shell" onClick={handleContentClick} style={{ maxWidth: '480px', margin: '0 auto', position: 'relative' }}>
@@ -430,7 +431,7 @@ export default function ReaderPage() {
                     )}
                 </div>
 
-                <div className="mese-body-wrapper" style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
+                <div className="mese-body-wrapper" onCopy={watermarkOnCopy} style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
                     <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
                 </div>
 

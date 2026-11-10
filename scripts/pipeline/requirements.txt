@@ -11,3 +11,6 @@ requests
 json-repair
 Pillow
 numpy
+
+invisible-watermark
+opencv-python-headless

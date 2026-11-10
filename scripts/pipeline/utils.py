@@ -172,6 +172,79 @@ def get_tags(tags: list) -> list:
     return ids
 
 
+# --- image optimisation -------------------------------------------------------
+IMG_MAX_SIDE = 1200      # longest side in px; story illustrations are 3:4 (896x1200)
+IMG_WEBP_QUALITY = 85
+
+
+IMG_WM_PAYLOAD = b"mesenet1"      # 8 bytes hidden in every image (invisible watermark)
+IMG_WM_METHOD = "dwtDctSvd"
+IMG_WM_SCALES = [0, 120, 120]     # tuned: survives WebP q85 on 8/8 test illustrations, ~32 dB PSNR, not visible
+
+
+def _embed_invisible_watermark(im):
+    """Frequency-domain watermark (survives WebP re-encoding, unlike LSB). Returns a PIL image."""
+    import cv2
+    import numpy as np
+    from imwatermark import WatermarkEncoder
+
+    enc = WatermarkEncoder()
+    enc.set_watermark("bytes", IMG_WM_PAYLOAD)
+    bgr = cv2.cvtColor(np.array(im.convert("RGB")), cv2.COLOR_RGB2BGR)
+    out = enc.encode(bgr, IMG_WM_METHOD, scales=IMG_WM_SCALES)
+    from PIL import Image
+    return Image.fromarray(cv2.cvtColor(out, cv2.COLOR_BGR2RGB))
+
+
+def read_invisible_watermark(raw: bytes) -> bytes:
+    """Decode the hidden payload from image bytes (for verification / proving ownership)."""
+    import cv2
+    import numpy as np
+    from imwatermark import WatermarkDecoder
+    from PIL import Image
+
+    im = Image.open(io.BytesIO(raw)).convert("RGB")
+    bgr = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
+    return WatermarkDecoder("bytes", len(IMG_WM_PAYLOAD) * 8).decode(bgr, IMG_WM_METHOD, scales=IMG_WM_SCALES)
+
+
+def optimize_image(raw: bytes, max_side: int = IMG_MAX_SIDE, quality: int = IMG_WEBP_QUALITY,
+                   watermark: bool = True) -> bytes:
+    """Downscale (never upscale), embed the invisible watermark, re-encode as WebP.
+
+    The watermark is embedded after resizing and before WebP encoding, then verified on the
+    encoded bytes. If it cannot be embedded or verified a warning is printed, the image is still returned.
+    """
+    from PIL import Image
+
+    with Image.open(io.BytesIO(raw)) as im:
+        im.load()
+        if im.mode not in ("RGB", "RGBA"):
+            im = im.convert("RGBA" if "A" in im.getbands() else "RGB")
+        if max(im.size) > max_side:
+            im = im.resize(
+                (round(im.width * max_side / max(im.size)), round(im.height * max_side / max(im.size))),
+                Image.LANCZOS,
+            )
+        if watermark:
+            try:
+                im = _embed_invisible_watermark(im)
+            except Exception as e:
+                print(f"[!] Invisible watermark not embedded ({e}) — pip install invisible-watermark")
+                watermark = False
+        out = io.BytesIO()
+        im.save(out, format="WEBP", quality=quality, method=6)
+        data = out.getvalue()
+
+    if watermark:
+        try:
+            if read_invisible_watermark(data) != IMG_WM_PAYLOAD:
+                print("[!] Invisible watermark did NOT survive WebP encoding for this image")
+        except Exception as e:
+            print(f"[!] Invisible watermark verification failed: {e}")
+    return data
+
+
 def upload_media(img, slug: str, alt_text: str = "", title_text: str = "", description: str = ""):
     """Upload image to WP media.
 
@@ -192,13 +265,21 @@ def upload_media(img, slug: str, alt_text: str = "", title_text: str = "", descr
             img.image.save(buf, format="PNG")
             b = buf.getvalue()
 
+        ext, mime = "png", "image/png"
+        try:
+            optimized = optimize_image(b)
+            print(f"[+] Image optimised: {len(b)//1024} KB -> {len(optimized)//1024} KB (WebP)")
+            b, ext, mime = optimized, "webp", "image/webp"
+        except Exception as e:
+            print(f"[!] Image optimisation failed ({e}); uploading original")
+
         r = requests.post(
             f"{WP_BASE_URL}/wp-json/wp/v2/media",
             data=b,
             auth=(WP_USERNAME, WP_APP_PASSWORD),
             headers={
-                "Content-Disposition": f"attachment; filename={slug}.png",
-                "Content-Type": "image/png",
+                "Content-Disposition": f"attachment; filename={slug}.{ext}",
+                "Content-Type": mime,
             },
             timeout=60,
         )
