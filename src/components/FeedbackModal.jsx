@@ -49,7 +49,7 @@ export default function FeedbackModal({ isOpen, onClose, storyTitle, storyId }) 
   return (
     <div className="modal-overlay" onClick={onClose} style={{ zIndex: 100000 }}>
       <div className="modal-content feedback-modal" onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', borderColor: 'rgba(255,215,0,0.2)' }}>
-        <button className="modal-close" onClick={onClose}>×</button>
+        <button className="modal-close" aria-label="Bezárás" onClick={onClose}>×</button>
         
         {isSuccess ? (
           <div className="fade-in" style={{ padding: '2em 0' }}>

@@ -163,7 +163,7 @@ export default function ProfilePage() {
       {activeModal && (
         <div className="modal-overlay" onClick={() => setActiveModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setActiveModal(null)}>×</button>
+            <button className="modal-close" aria-label="Bezárás" onClick={() => setActiveModal(null)}>×</button>
             
             {activeModal === 'aszf' && (
               <>

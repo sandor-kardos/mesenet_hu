@@ -409,15 +409,17 @@ export default function ReaderPage() {
                             className="icon-btn-small" 
                             onClick={(e) => { e.stopPropagation(); if (story) toggleFavorite(story.id); }}
                             title={isSaved ? 'Mentve a könyvtárba' : 'Mentés a könyvtárba'}
+                            aria-label={isSaved ? 'Mentve a könyvtárba' : 'Mentés a könyvtárba'}
+                            aria-pressed={!!isSaved}
                             style={isSaved ? { color: '#ffd700', borderColor: '#ffd700', background: 'rgba(255, 215, 0, 0.15)' } : {}}
                         >
                             <Bookmark size={17} fill={isSaved ? 'currentColor' : 'none'} />
                         </button>
-                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); setFontSize(p => p >= 150 ? 100 : p + 25); }}>
+                        <button className="icon-btn-small" aria-label={`Betűméret: ${fontSize}%, váltás`} onClick={(e) => { e.stopPropagation(); setFontSize(p => p >= 150 ? 100 : p + 25); }}>
                             🔍<span className="tiny-percent">{fontSize}%</span>
                         </button>
-                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}>🪄</button>
-                        <button className="icon-btn-small" onClick={(e) => { e.stopPropagation(); cycleTheme(); }}>{themeIcon}</button>
+                        <button className="icon-btn-small" aria-label="Nyelv váltása" onClick={(e) => { e.stopPropagation(); toggleLanguage(); }}>🪄</button>
+                        <button className="icon-btn-small" aria-label="Téma váltása" onClick={(e) => { e.stopPropagation(); cycleTheme(); }}>{themeIcon}</button>
                     </div>
                 </div>
             </div>
