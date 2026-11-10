@@ -3,6 +3,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useReading } from '../context/ReadingContext';
 import { useStories } from '../context/StoryContext';
 import { useLanguage } from '../context/LanguageContext';
+import { resetConsent } from '../utils/consent';
 
 
 export default function ProfilePage() {
@@ -45,7 +46,7 @@ export default function ProfilePage() {
             <p>{t('notificationsDesc')}</p>
           </div>
           <label className="toggle-switch">
-            <input type="checkbox" />
+            <input type="checkbox" aria-label={t('notifications')} />
             <span className="slider"></span>
           </label>
         </div>
@@ -76,7 +77,7 @@ export default function ProfilePage() {
           }}>
             <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🖼️</div>
             <p className="theme-aware-muted" style={{ margin: 0, fontWeight: 500 }}>{t('noDrawings')}</p>
-            <p className="theme-aware-muted" style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '5px' }}>{t('drawFirst')}</p>
+            <p className="theme-aware-muted" style={{ fontSize: '0.8rem', marginTop: '5px' }}>{t('drawFirst')}</p>
 
 
           </div>
@@ -147,7 +148,7 @@ export default function ProfilePage() {
           href="https://ko-fi.com/sandorko" 
           target="_blank" 
           rel="noopener noreferrer"
-          style={{ display: 'inline-block', padding: '12px 24px', background: '#FF5E5B', color: 'white', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 12px rgba(255, 94, 91, 0.3)' }}
+          style={{ display: 'inline-block', padding: '12px 24px', background: '#D1342F', color: 'white', borderRadius: '12px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 12px rgba(255, 94, 91, 0.3)' }}
         >
           {t('coffee')}
         </a>
@@ -156,6 +157,7 @@ export default function ProfilePage() {
       <div className="footer-links">
         <button onClick={() => setActiveModal('aszf')} className="text-btn">{t('aszf')}</button>
         <button onClick={() => setActiveModal('privacy')} className="text-btn">{t('privacy')}</button>
+        <button onClick={resetConsent} className="text-btn">{t('consentSettings')}</button>
         <a href="mailto:hello@mesenet.hu">{t('contact')}</a>
       </div>
 
@@ -185,7 +187,7 @@ export default function ProfilePage() {
                   <p><strong>1. Adatkezelő megnevezése</strong><br />Mesenet.hu üzemeltetője (Kapcsolat: hello@mesenet.hu)</p>
                   <p><strong>2. Kezelt adatok köre</strong><br />A Szolgáltatás "invisible profiling" módszert használ. Ez azt jelenti, hogy nem kérünk be személyes azonosító adatokat (név, cím, telefonszám).</p>
                   <p><strong>3. Helyi adattárolás (Local Storage)</strong><br />Az Ön olvasási statisztikáit (melyik mesét hány percig olvasta, kedvencek listája, választott életkor) kizárólag az Ön saját eszközén (böngészőjében) tároljuk el a "Local Storage" technológia segítségével.</p>
-                  <p><strong>4. Analitika és Sütik (Cookies)</strong><br />Az alkalmazás fejlesztése és hibakeresése érdekében anonimizált analitikai adatokat gyűjthetünk. Ezek az adatok nem alkalmasak az Ön személyes azonosítására.</p>
+                  <p><strong>4. Analitika és Sütik (Cookies)</strong><br />Az alkalmazás fejlesztése érdekében névtelen látogatottsági statisztikát gyűjthetünk. Ezen felül, <strong>kizárólag az Ön beleegyezésével</strong> (az oldal alján megjelenő kérdésre adott „Elfogadom" válasszal), a Microsoft Clarity eszközt (Microsoft Corporation) használjuk: ez kattintási térképet és munkamenet-felvételt készít az oldal használatáról, és sütiket (<code>_clck</code>, <code>_clsk</code>) helyez el. Az űrlapmezők tartalmát az eszköz alapértelmezetten elfedi. Ha a „Nem kérem" lehetőséget választja, vagy nem válaszol, semmilyen Clarity-adat nem keletkezik. A döntését bármikor megváltoztathatja a Profil oldalon a „Statisztika-beállítások" gombbal; ilyenkor a Clarity sütik törlődnek. További információ: <a href="https://clarity.microsoft.com/terms" target="_blank" rel="noopener noreferrer">clarity.microsoft.com/terms</a>.</p>
                   <p><strong>5. Jogorvoslat</strong><br />Mivel személyes adatot (PII) nem tárolunk a szervereinken, adattörlési kérelmét az alkalmazás beállításaiban, a helyi adatok (Cache/Local Storage) böngészőből történő törlésével tudja önállóan végrehajtani.</p>
                 </div>
               </>

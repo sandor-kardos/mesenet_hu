@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { ReadingProvider } from './context/ReadingContext';
@@ -6,6 +6,8 @@ import { StoryProvider } from './context/StoryContext';
 import { LanguageProvider, useLanguage } from './context/LanguageContext';
 import Header from './components/Header';
 import TabBar from './components/TabBar';
+import ConsentBanner from './components/ConsentBanner';
+import { initConsent } from './utils/consent';
 import HomePage from './pages/HomePage';
 
 const ReaderPage = lazy(() => import('./pages/ReaderPage'));
@@ -17,6 +19,9 @@ function AppContent() {
   const location = useLocation();
   const isReader = location.pathname.startsWith('/read/') || location.pathname.startsWith('/mese/');
   const { lang } = useLanguage();
+
+  // Analytics (Microsoft Clarity) is loaded only if the visitor already said yes on an earlier visit.
+  useEffect(() => { initConsent(); }, []);
 
   return (
     <div className={isReader ? '' : 'app-shell'} key={lang}>
@@ -34,6 +39,7 @@ function AppContent() {
         </Suspense>
       </main>
       <TabBar />
+      <ConsentBanner />
     </div>
   );
 }

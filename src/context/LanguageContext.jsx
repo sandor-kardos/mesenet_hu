@@ -72,6 +72,11 @@ const translations = {
         coffee: '☕ Hívj meg egy kávéra a Ko-fi-n!',
         aszf: 'ÁSZF',
         privacy: 'Adatvédelem',
+        consentSettings: 'Statisztika-beállítások',
+        consentTitle: 'Segítesz jobbá tenni az oldalt?',
+        consentText: 'Névtelen használati statisztikát (kattintási térkép, munkamenet-felvétel) gyűjtünk a Microsoft Clarity eszközzel, hogy jobb legyen a Mesenet. Csak a beleegyezéseddel, sütikkel. A Profil > Adatvédelem alatt olvashatsz róla, és bármikor visszavonhatod.',
+        consentAccept: 'Elfogadom',
+        consentDecline: 'Nem kérem',
         contact: 'Kapcsolat',
         
         // Feedback
@@ -169,6 +174,11 @@ const translations = {
         coffee: '☕ Buy me a coffee on Ko-fi!',
         aszf: 'Terms',
         privacy: 'Privacy',
+        consentSettings: 'Analytics settings',
+        consentTitle: 'Help us improve the site?',
+        consentText: 'We collect anonymous usage statistics (click maps, session recordings) with Microsoft Clarity to make Mesenet better. Only with your consent, using cookies. Details under Profile > Privacy; you can withdraw at any time.',
+        consentAccept: 'Accept',
+        consentDecline: 'No thanks',
         contact: 'Contact',
         
         // Feedback
