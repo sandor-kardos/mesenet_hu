@@ -425,6 +425,8 @@ export default function ReaderPage() {
             </div>
 
             <div className="reader-content" ref={contentRef}>
+                {/* Visually hidden h1 so the rendered page keeps the heading the prerendered HTML has. */}
+                <h1 className="sr-only">{story.title}</h1>
                 <div className="reader-cover" onDoubleClick={(e) => { e.stopPropagation(); if (story.featuredImage) setEnlargedImage(story.featuredImage); }}>
                     {story.featuredImage ? (
                         <img 

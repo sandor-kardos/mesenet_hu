@@ -35,6 +35,8 @@ export default function HomePage() {
 
     return (
         <div className="fade-in">
+            {/* The prerendered HTML has this h1, but createRoot replaces it, so crawlers that render JS saw none. */}
+            <h1 className="sr-only">Magyar népmesék és esti mesék gyerekeknek</h1>
             <ContinueCard />
             <MoralWeightFilter onFilterChange={setFilteredStories} />
 
