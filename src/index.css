@@ -2130,8 +2130,12 @@ input:checked + .slider:before {
   border: none;
   cursor: pointer;
   color: var(--text-primary);
-  opacity: 0.6;
 }
+
+/* Dim only the icon, not the whole button: opacity on the button also faded the count badge below WCAG AA contrast. */
+.action-btn > svg { opacity: 0.6; transition: opacity 0.3s ease; }
+.action-btn:hover > svg, .action-btn:focus-visible > svg,
+.action-btn.active-like > svg, .action-btn.active-pin > svg, .action-btn.active-dislike > svg { opacity: 1; }
 
 .action-btn:hover { opacity: 1; transform: scale(1.1); }
 .action-btn:active { transform: scale(0.95); }
@@ -2150,12 +2154,11 @@ input:checked + .slider:before {
   font-weight: 900;
   box-shadow: var(--shadow-sm);
   transition: all 0.5s ease;
-  background: var(--text-secondary);
-  color: var(--bg-primary);
-  opacity: 0.6;
+  background: #475569;   /* slate-600 + white = 7.6:1, passes WCAG AA in light and dark themes */
+  color: #fff;
 }
 
-.action-count-badge.active-badge { background: #EF4444; color: #fff; opacity: 1; transform: scale(1.1); }
+.action-count-badge.active-badge { background: #B91C1C; color: #fff; opacity: 1; transform: scale(1.1); }
 
 .feedback-grid {
   display: grid;

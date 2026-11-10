@@ -41,7 +41,7 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
             
             <div className="carousel-wrapper">
                 <button className="carousel-nav-btn left" onClick={(e) => { e.stopPropagation(); scroll('left'); }} aria-label="Scroll left">‹</button>
-                <div className={`story-carousel ${isSmall ? 'small-carousel' : ''}`} ref={scrollRef}>
+                <div className={`story-carousel ${isSmall ? 'small-carousel' : ''}`} ref={scrollRef} tabIndex={0} role="region" aria-label="Mesék görgethető listája">
                     {stories.map((story, idx) => (
                         <div
                             key={story.id}
