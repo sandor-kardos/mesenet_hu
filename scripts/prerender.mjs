@@ -49,6 +49,8 @@ function fail(msg) {
 function cleanContent(html) {
   let out = html
     .replace(/<div[^>]*id=['"]mese-focal-point['"][^>]*>[\s\S]*?<\/div>/gi, '')
+    // Internal image-generation prompt stored in the post body (display:none). Must never reach the static HTML.
+    .replace(/<div[^>]*id=['"]mese-hidden-image-prompt['"][^>]*>[\s\S]*?<\/div>/gi, '')
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/\son\w+="[^"]*"/gi, '')
