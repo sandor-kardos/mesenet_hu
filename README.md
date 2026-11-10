@@ -107,6 +107,14 @@ A projekt szigorúan szétválasztja az adatréteget, az AI feldolgozó láncot 
 
 ## 📈 Eredmények 🌟
 
+**Mérések (2026. 11. 10.):**
+
+| Security Headers (Snyk): A | PageSpeed Insights, mobil, labor-adat |
+|---|---|
+| ![Security Headers: A fokozat](docs/images/security-headers-grade-a.webp) | ![PageSpeed mobil: 100/100/100/100](docs/images/pagespeed-mobile-100.webp) |
+
+A Security Headers értékelés **A** (nem A+). A PageSpeed eredmény egyetlen Lighthouse-futás (emulált Moto G, lassú 4G), valós felhasználói adat még nincs.
+
 * **Betöltési sebesség:** < 1.2 másodperces kezdeti betöltés mobilon.
 * **Operatív költség:** Zero licencköltség, modern headless CMS architektúra.
 * **100% SEO kompatibilitás:** Keresőbarát URL struktúra és gazdag találati meta adatok.
