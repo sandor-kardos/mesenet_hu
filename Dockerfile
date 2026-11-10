@@ -6,6 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+ENV PRERENDER_STRICT=1
 RUN npm run build && cp dist/spa.html dist/404.html && cp dist/sw-v6.js dist/sw.js
 
 # Stage 2: Serve with Nginx + SPA Fallback + Security Headers
