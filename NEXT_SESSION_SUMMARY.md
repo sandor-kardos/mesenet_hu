@@ -44,6 +44,9 @@
 
 ## 🔍 2. Kulcsfontosságú felfedezés a következő munkamenetre
 
+> [!NOTE]
+> **Javítás (2026-11-10):** élesben ellenőrizve *A vak király* (post 97) és *A cigány fiú* (post 101) **már teljes** a WordPressben, a forrás vége megvan. A csonka `content` a köztes `tales_watermarked.json` fájlban van (watermark-lépés), a publikálás pedig a `content` mezőből dolgozik. Részletek: [docs/SESSION_2026-11-10.md](docs/SESSION_2026-11-10.md#7-csonka-mesék-mi-derült-ki). A lenti számok a köztes fájlokra igazak, nem az éles oldalra.
+
 Az audit során kiderült, hogy a korábbi LLM enrich/cleanup lépés során (token limit miatt) nemcsak *A cigány fiú*, hanem néhány további mese szövege is csonkán került a köztes JSON-ökbe:
 - **A vak király (Post 97):** A forrásban (`tales_raw.json`) **31 593 karakter**, a WP-n jelenleg csak **11 483 karakter** (a küldetés egyharmadánál megszakad).
 - **A tündérkisasszony és a cigányleány:** A forrásban teljes, de az enriched fájlban 1 368 karakternél elvágva.
