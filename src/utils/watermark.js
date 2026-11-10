@@ -16,6 +16,8 @@ export function addZwj(text, interval = WORD_INTERVAL) {
 
 // onCopy handler: replaces the plain-text clipboard payload with a watermarked copy.
 export function watermarkOnCopy(e) {
+  const el = e.target instanceof Element ? e.target : null
+  if (el && el.closest('input, textarea, [contenteditable="true"]')) return // never touch form fields
   const selected = window.getSelection?.().toString()
   if (!selected || !e.clipboardData) return
   e.clipboardData.setData('text/plain', addZwj(selected))

@@ -131,6 +131,12 @@ export default function ReaderPage() {
         });
     }, [story]);
     const contentRef = useRef(null);
+    // Watermark copied text. Document-level on purpose: the browser decides the copy event's target from
+    // where the selection starts, so an element-level onCopy misses selections that start outside the body.
+    useEffect(() => {
+        document.addEventListener('copy', watermarkOnCopy);
+        return () => document.removeEventListener('copy', watermarkOnCopy);
+    }, []);
     const hideTimeout = useRef(null);
     const fileInputRef = useRef(null);
     const lastScrollTop = useRef(0);
@@ -431,7 +437,7 @@ export default function ReaderPage() {
                     )}
                 </div>
 
-                <div className="mese-body-wrapper" onCopy={watermarkOnCopy} style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
+                <div className="mese-body-wrapper" style={{ fontSize: `${fontSize}%`, transition: 'font-size 0.3s ease' }}>
                     <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
                 </div>
 
