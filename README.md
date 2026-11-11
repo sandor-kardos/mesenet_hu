@@ -48,7 +48,7 @@ A projekt szigorúan szétválasztja az adatréteget, az AI feldolgozó láncot 
 ```
 
 * **Frontend (React 19 + Vite 7):** Ultrakönnyű mobil-első PWA felület, optimalizált tipográfiával, könyvjelzőzési rendszerrel és dinamikus Open Graph meta címkékkel.
-* **Képi pipeline (3:4 Full-Bleed):** Mobil-optimalizált 3:4 arányú illusztrációk szigorú keretmentesítéssel (`remove_image_borders.py`), szöveg- és szimbólumtilalommal.
+* **Képi pipeline & Képalkotási feltételek (3:4 Full-Bleed & 4:3 Wide Adaptív):** Szigorú művészi könyvillusztrációs stílusirányelv finom tusvonalas kontúrokkal és szerves akvarell textúrákkal. Mobil-optimalizált 3:4 arányú full-bleed illusztrációk szigorú keretmentesítéssel (`remove_image_borders.py`), szöveg- és szimbólumtilalommal, valamint intelligens 4:3-as megjelenítés a fekvő tájolású klasszikus meséknél.
 * **Intelligens fókuszpont (OpenCV):** Haar-Cascade arcfelismerő és Achanta vizuális feltűnőség algoritmus a képek kulcsterületének automatikus kiszámítására mobilos nézetben (`object-position`).
 * **Szerzői jogvédelem (láthatatlan vízjel):** a szövegbe a pipeline Zero-Width Joiner (`\u200d`) ujjlenyomatot tesz minden 37. szó után. A reader a megjelenítéskor kiszedi (így a keresők és az olvasók ugyanazt a tiszta szöveget látják), és **csak másoláskor** teszi vissza a vágólapra. A képek feltöltéskor **láthatatlan, frekvenciatartományú vízjelet** kapnak, ami a WebP-kódolást is túléli (`scripts/pipeline/utils.py`).
 * **Headless CMS réteg:** Headless WordPress REST API (`/wp-json/wp/v2/mese`), egyedi mezőkkel (ACF olvasási idő, kérdések a meséhez, fókuszpont koordináták).
@@ -58,7 +58,8 @@ A projekt szigorúan szétválasztja az adatréteget, az AI feldolgozó láncot 
 
 ## 🚀 Legújabb Funkciók és Fejlesztések
 
-- **Keretmentes illusztrációk:** A korábbi CSS szegélyek eltávolítva; a generált képeken előforduló AI margók automatikus levágása és 3:4 méretarányra illesztése.
+- **Keretmentes illusztrációk & Klasszikus stílus:** A korábbi lapos vektoros stílust felváltotta az egységes európai mesekönyv-grafika (finom tusvonalas kontúrok, földszínek, természetes textúrák). A generált képeken szigorú keretmentesítés (3:4 full-bleed) és automatikus margólevágás működik.
+- **Adaptív fekvő képarány (4:3):** A fekvő forrású meséknél az olvasó automatikusan elegáns, kompakt 4:3-as arányt alkalmaz a vertikális szétnyújtás elkerülésére.
 - **Képi szövegtilalom:** Illusztrációkon kizárva mindenféle betű, felirat, szám és pergamen-szalag a tisztán képi élményért.
 - **Teljes szövegintegritás:** Az OCR-csonka mesék felülvizsgálata és hiánytalan visszaállítása a forrásdokumentumokból (pl. *A cigány fiú* teljes 22 bekezdése).
 - **Közösségi megosztás & CTA:** Natív mobil megosztó (`navigator.share`) vágólap-másolási tartalékkal és figyelemfelkeltő felhívásokkal.

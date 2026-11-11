@@ -37,6 +37,8 @@ secrets/
 scripts/importer/.env
 scripts/importer/prompt.txt
 scripts/importer/image_prompt.txt
+scripts/importer/*.local.md
+*.local.md
 
 # Prompt és debug fájlok
 *.prompt.txt
