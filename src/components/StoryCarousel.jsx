@@ -25,7 +25,7 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
     const handleMouseUp = (e, story) => {
         const deltaX = Math.abs(e.clientX - dragStart.x);
         const deltaY = Math.abs(e.clientY - dragStart.y);
-        
+
         // 10px threshold for drag vs click
         if (deltaX < 10 && deltaY < 10) {
             navigate(story.slug ? `/mese/${story.slug}` : `/read/${story.id}`);
@@ -38,10 +38,10 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                 {icon && <span style={{ marginRight: '8px' }}>{icon}</span>}
                 {title}
             </div>
-            
+
             <div className="carousel-wrapper">
                 <button className="carousel-nav-btn left" onClick={(e) => { e.stopPropagation(); scroll('left'); }} aria-label="Scroll left">‹</button>
-                <div className={`story-carousel ${isSmall ? 'small-carousel' : ''}`} ref={scrollRef} tabIndex={0} role="region" aria-label="Mesék görgethető listája">
+                <div className={`story-carousel ${isSmall ? 'small-carousel' : ''}`} ref={scrollRef} tabIndex={0} role="region" aria-label={title ? `${title} görgethető listája` : "Mesék görgethető listája"}>
                     {stories.map((story, idx) => (
                         <div
                             key={story.id}
@@ -52,20 +52,20 @@ export default function StoryCarousel({ title, stories, isSmall = false, icon = 
                         >
                             <div className={`story-card-cover ${isSmall ? 'small-cover' : ''}`} style={story.featuredImage ? { background: 'transparent' } : {}}>
                                 {story.featuredImage ? (
-                                    <img 
+                                    <img
                                         src={story.cardImage || story.featuredImage}
                                         srcSet={story.srcSet}
                                         sizes="(max-width: 600px) 210px, 260px"
                                         width="210"
                                         height="280"
-                                        alt={story.title} 
-                                        style={{ 
-                                            width: '100%', 
-                                            height: '100%', 
-                                            objectFit: 'cover', 
+                                        alt={story.title}
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
                                             pointerEvents: 'none',
                                             objectPosition: story.focalPoint || 'center 30%'
-                                        }} 
+                                        }}
                                         loading={idx < 2 && !isSmall ? 'eager' : 'lazy'}
                                         fetchPriority={idx < 2 && !isSmall ? 'high' : 'auto'}
                                         decoding="async"

@@ -432,7 +432,7 @@ export default function ReaderPage() {
                         <img 
                             src={story.featuredImage} 
                             alt={story.title} 
-                            className="story-image-mock" 
+                            className={`story-image-mock ${story.isWideImage ? 'wide-story-cover' : ''}`} 
                             style={{ objectPosition: story.focalPoint || 'center 30%' }}
                             loading="eager"
                         />

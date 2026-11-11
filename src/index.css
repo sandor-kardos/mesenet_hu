@@ -704,6 +704,13 @@ img {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Elegant presentation for landscape / wide tales: 4:3 ratio with compact height to prevent vertical stretching */
+.story-image-mock.wide-story-cover {
+  aspect-ratio: 4/3;
+  max-height: 48vh;
+  object-fit: cover;
+}
+
 .lightbox-overlay { 
   position: fixed; 
   top: 0; left: 0; right: 0; bottom: 0; 

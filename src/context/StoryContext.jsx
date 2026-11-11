@@ -81,6 +81,11 @@ export function StoryProvider({ children }) {
                     const focalMatch = contentHtml.match(/id=['"]mese-focal-point['"][^>]*>([^<]+)<\/div>/);
                     const focalPoint = focalMatch ? focalMatch[1].trim() : 'center 30%';
 
+                    // Check if original image was landscape/wide
+                    const origW = mediaObj?.media_details?.width || 0;
+                    const origH = mediaObj?.media_details?.height || 0;
+                    const isWideImage = origW > 0 && origH > 0 && (origW / origH > 1.25);
+
                     return {
                         id: post.id,
                         date: post.date,
@@ -93,6 +98,7 @@ export function StoryProvider({ children }) {
                         cardImage: cardImage,
                         srcSet: srcSet,
                         focalPoint: focalPoint,
+                        isWideImage: isWideImage,
                         readingTime: parseInt(acf.reading_time) || 5,
                         ageGroup: ageGroups.length > 0 ? ageGroups[0] : '4-6',
                         collection: collections.length > 0 ? collections[0] : null,
